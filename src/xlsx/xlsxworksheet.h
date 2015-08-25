@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 ** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
 ** All right reserved.
 **
@@ -34,6 +34,7 @@
 #include <QVariant>
 #include <QPointF>
 #include <QSharedPointer>
+#include <QSize>
 class QIODevice;
 class QDateTime;
 class QUrl;
@@ -126,7 +127,7 @@ public:
     Cell *cellAt(const CellReference &row_column) const;
     Cell *cellAt(int row, int column) const;
 
-    bool insertImage(int row, int column, const QImage &image);
+    bool insertImage(int row, int column, const QImage &image, const QSize &size = QSize());
     Chart *insertChart(int row, int column, const QSize &size);
 
     bool mergeCells(const CellRange &range, const Format &format=Format());
@@ -142,6 +143,7 @@ public:
     double columnWidth(int column);
     Format columnFormat(int column);
     bool isColumnHidden(int column);
+    int baseColumnWidth() const;
 
     bool setRowHeight(int rowFirst,int rowLast, double height);
     bool setRowFormat(int rowFirst,int rowLast, const Format &format);
