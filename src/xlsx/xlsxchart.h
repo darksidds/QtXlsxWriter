@@ -41,6 +41,81 @@ class ChartPrivate;
 class CellRange;
 class DrawingAnchor;
 
+class Marker
+{
+public:
+    enum MarkerType {
+        MT_Automatic,
+        MT_None,
+        MT_Square,
+        MT_Diamond,
+        MT_Triangle,
+        MT_X,
+        MT_Star,
+        MT_Short_dash,
+        MT_Long_dash,
+        MT_Circle,
+        MT_Plus
+    };
+    Marker(MarkerType type = MT_Automatic, unsigned size = 20) : type(type), size(size) { }
+
+    void setMarkerType(MarkerType type) { this->type = type; }
+    void setMarkerSize(unsigned size)   { this->size = size; }
+    MarkerType markerType() const { return type; }
+    QString    getType() {
+        QString res = QString("none");
+        switch (type) {
+        case MT_Automatic:
+            res = QString("automatic");
+            break;
+        case MT_None:
+            res = QString("none");
+            break;
+        case MT_Square:
+            res = QString("square");
+            break;
+        case MT_Diamond:
+            res = QString("diamond");
+            break;
+        case MT_Triangle:
+            res = QString("triangle");
+            break;
+        case MT_X:
+            res = QString("x");
+            break;
+        case MT_Star:
+            res = QString("star");
+            break;
+        case MT_Short_dash:
+            res = QString("short_dash");
+            break;
+        case MT_Long_dash:
+            res = QString("long_dash");
+            break;
+        case MT_Circle:
+            res = QString("circle");
+            break;
+        case MT_Plus:
+            res = QString("plus");
+            break;
+        default:
+            res = QString("none");
+            break;
+        }
+        return res;
+    }
+
+    unsigned   markerSize() const { return size; }
+
+private:
+    MarkerType type;
+    unsigned size;
+    /* border
+    fill
+    pattern
+    gradient*/
+};
+
 class Q_XLSX_EXPORT Chart : public AbstractOOXmlFile
 {
     Q_DECLARE_PRIVATE(Chart)
