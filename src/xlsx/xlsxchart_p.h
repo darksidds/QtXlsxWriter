@@ -53,6 +53,7 @@ public:
     //At present, we care about number cell ranges only!
     QString numberDataSource_numRef; //yval, val
     QString axDataSource_numRef; //xval, cat
+    Marker  marker;
 };
 
 class XlsxAxis
