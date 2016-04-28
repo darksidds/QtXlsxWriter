@@ -534,6 +534,13 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
     writer.writeEmptyElement(QStringLiteral("c:order"));
     writer.writeAttribute(QStringLiteral("val"), QString::number(id));
 
+    if (!ser->numberDataSource_numRef.isEmpty()) {
+        writer.writeStartElement(QStringLiteral("c:marker"));
+        writer.writeEmptyElement(QStringLiteral("c:symbol"));
+        writer.writeAttribute(QStringLiteral("val"), ser->marker.getType());
+        writer.writeEndElement();//c:marker
+    }
+
     if (!ser->axDataSource_numRef.isEmpty()) {
         if (chartType == Chart::CT_Scatter || chartType == Chart::CT_Bubble)
             writer.writeStartElement(QStringLiteral("c:xVal"));
