@@ -142,7 +142,7 @@ public:
 
     ~Chart();
 
-    void addSeries(const CellRange &range, AbstractSheet *sheet=0);
+    void addSeries(const CellRange &range, Marker marker = Marker(), AbstractSheet *sheet=0);
     void setChartType(ChartType type);
     void setChartStyle(int id);
 
