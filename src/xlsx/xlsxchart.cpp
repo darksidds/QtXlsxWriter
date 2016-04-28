@@ -93,7 +93,7 @@ Chart::~Chart()
 /*!
  * Add the data series which is in the range \a range of the \a sheet.
  */
-void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
+void Chart::addSeries(const CellRange &range, Marker marker, AbstractSheet *sheet)
 {
     Q_D(Chart);
     if (!range.isValid())
@@ -110,6 +110,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
     if (range.columnCount() == 1 || range.rowCount() == 1) {
         QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
         series->numberDataSource_numRef = sheetName + QLatin1String("!") + range.toString(true, true);
+        series->marker = marker;
         d->seriesList.append(series);
     } else if (range.columnCount() < range.rowCount()) {
         //Column based series
@@ -126,6 +127,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
             series->axDataSource_numRef = axDataSouruce_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            series->marker = marker;
             d->seriesList.append(series);
         }
 
@@ -144,6 +146,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
             series->axDataSource_numRef = axDataSouruce_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            series->marker = marker;
             d->seriesList.append(series);
         }
     }
