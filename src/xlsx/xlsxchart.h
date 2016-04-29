@@ -57,55 +57,14 @@ public:
         MT_Circle,
         MT_Plus
     };
-    Marker(MarkerType type = MT_Automatic, unsigned size = 20) : type(type), size(size) { }
+    Marker(MarkerType type = MT_Automatic, unsigned size = 20);
 
-    void setMarkerType(MarkerType type) { this->type = type; }
-    void setMarkerSize(unsigned size)   { this->size = size; }
-    MarkerType markerType() const { return type; }
-    QString    getType() {
-        QString res = QString("none");
-        switch (type) {
-        case MT_Automatic:
-            res = QString("automatic");
-            break;
-        case MT_None:
-            res = QString("none");
-            break;
-        case MT_Square:
-            res = QString("square");
-            break;
-        case MT_Diamond:
-            res = QString("diamond");
-            break;
-        case MT_Triangle:
-            res = QString("triangle");
-            break;
-        case MT_X:
-            res = QString("x");
-            break;
-        case MT_Star:
-            res = QString("star");
-            break;
-        case MT_Short_dash:
-            res = QString("short_dash");
-            break;
-        case MT_Long_dash:
-            res = QString("long_dash");
-            break;
-        case MT_Circle:
-            res = QString("circle");
-            break;
-        case MT_Plus:
-            res = QString("plus");
-            break;
-        default:
-            res = QString("none");
-            break;
-        }
-        return res;
-    }
+    void setMarkerType(MarkerType type);
+    void setMarkerSize(unsigned size);
+    MarkerType markerType() const;
+    QString    getType();
 
-    unsigned   markerSize() const { return size; }
+    unsigned   markerSize() const;
 
 private:
     MarkerType type;
@@ -142,7 +101,7 @@ public:
 
     ~Chart();
 
-    void addSeries(const CellRange &range, Marker marker = Marker(), AbstractSheet *sheet=0);
+    void addSeries(const CellRange &range, AbstractSheet *sheet=0, Marker marker = Marker());
     void setChartType(ChartType type);
     void setChartStyle(int id);
 

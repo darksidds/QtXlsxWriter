@@ -35,6 +35,95 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
+/*!
+ * \class Marker
+ */
+
+/*!
+  \enum Marker::MarkerType
+  \value MT_Automatic,
+  \value MT_None,
+  \value MT_Square,
+  \value MT_Diamond,
+  \value MT_Triangle,
+  \value MT_X,
+  \value MT_Star,
+  \value MT_Short_dash,
+  \value MT_Long_dash,
+  \value MT_Circle,
+  \value MT_Plus
+*/
+
+Marker::Marker(MarkerType type, unsigned size)
+    : type(type), size(size)
+{
+
+}
+
+void Marker::setMarkerType(MarkerType type)
+{
+    this->type = type;
+}
+
+void Marker::setMarkerSize(unsigned size)
+{
+    this->size = size;
+}
+
+MarkerType Marker::markerType() const
+{
+    return type;
+}
+
+QString Marker::getType()
+{
+    QString res = QString("none");
+    switch (type) {
+        case MT_Automatic:
+            res = QString("automatic");
+            break;
+        case MT_None:
+            res = QString("none");
+            break;
+        case MT_Square:
+            res = QString("square");
+            break;
+        case MT_Diamond:
+            res = QString("diamond");
+            break;
+        case MT_Triangle:
+            res = QString("triangle");
+            break;
+        case MT_X:
+            res = QString("x");
+            break;
+        case MT_Star:
+            res = QString("star");
+            break;
+        case MT_Short_dash:
+            res = QString("short_dash");
+            break;
+        case MT_Long_dash:
+            res = QString("long_dash");
+            break;
+        case MT_Circle:
+            res = QString("circle");
+            break;
+        case MT_Plus:
+            res = QString("plus");
+            break;
+        default:
+            res = QString("none");
+            break;
+    }
+    return res;
+}
+
+unsigned Marker::markerSize() const
+{
+    return size;
+}
+
 ChartPrivate::ChartPrivate(Chart *q, Chart::CreateFlag flag)
     :AbstractOOXmlFilePrivate(q, flag), chartType(static_cast<Chart::ChartType>(0))
 {
