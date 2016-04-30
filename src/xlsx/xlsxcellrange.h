@@ -41,6 +41,7 @@ public:
     ~CellRange();
 
     QString toString(bool row_abs=false, bool col_abs=false) const;
+    static QString toString(int firstRow, int firstColumn, int lastRow, int lastColumn);
     bool isValid() const;
     inline void setFirstRow(int row) { top = row; }
     inline void setLastRow(int row) { bottom = row; }

@@ -136,6 +136,12 @@ QString CellRange::toString(bool row_abs, bool col_abs) const
     return cell_1 + QLatin1String(":") + cell_2;
 }
 
+QString CellRange::toString(int firstRow, int firstColumn, int lastRow, int lastColumn)
+{
+    CellRange cellRange(firstRow, firstColumn, lastRow, lastColumn);
+    return cellRange.toString();
+}
+
 /*!
  * Returns true if the Range is valid.
  */
