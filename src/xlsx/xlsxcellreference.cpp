@@ -163,6 +163,11 @@ QString CellReference::toString(bool row_abs, bool col_abs) const
     return cell_str;
 }
 
+CellReference CellReference::fromString(const QString &cell)
+{
+    return CellReference(cell);
+}
+
 /*!
  * Returns true if the Reference is valid.
  */
