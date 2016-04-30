@@ -61,11 +61,13 @@ public:
     Marker(MarkerType type = MT_Automatic, unsigned size = 20)
         : type(type), size(size) { }
 
-    void setMarkerType(MarkerType type) { this->type = type; }
-    void setMarkerSize(unsigned size) { this->size = size; }
+    inline void setMarkerType(MarkerType type) { this->type = type; }
+    inline void setMarkerSize(unsigned size) { this->size = size; }
 
-    MarkerType markerType() const { return type; }
-    QString    getType() {
+    inline MarkerType markerType() const { return type; }
+    inline unsigned   markerSize() const { return size; }
+
+    QString getType() {
         switch (type) {
             case MT_Automatic:
                 return QString::fromStdString("automatic");
@@ -93,8 +95,6 @@ public:
                 return QString::fromStdString("automatic");
         }
     }
-
-    unsigned   markerSize() const { return size; }
 
 private:
     MarkerType type;
