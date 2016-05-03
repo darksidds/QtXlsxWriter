@@ -33,7 +33,7 @@ class QXmlStreamWriter;
 
 QT_BEGIN_NAMESPACE_XLSX
 
-class Marker
+class Q_XLSX_EXPORT Marker
 {
 public:
     enum MarkerType {
