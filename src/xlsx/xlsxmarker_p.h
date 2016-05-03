@@ -23,77 +23,59 @@
 **
 ****************************************************************************/
 
-#ifndef QXLSX_MARKER_H
-#define QXLSX_MARKER_H
+#ifndef QXLSX_MARKER_P_H
+#define QXLSX_MARKER_P_H
 
-#include "xlsxglobal.h"
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt Xlsx API.  It exists for the convenience
+// of the Qt Xlsx.  This header file may change from
+// version to version without notice, or even be removed.
+//
+// We mean it.
+//
+
+#include "xlsxmarker.h"
+#include "xlsxcolor_p.h"
+
 #include <QSharedPointer>
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
 
-QT_BEGIN_NAMESPACE_XLSX
-
-class MarkerPrivate;
-class Q_XLSX_EXPORT Marker
+namespace QXlsx {
+class ChartLine
 {
-    Q_DECLARE_PRIVATE(Marker)
-
 public:
-    enum MarkerType {
-        MT_Auto,
-        MT_Circle,
-        MT_Dash,
-        MT_Diamond,
-        MT_Dot,
-        MT_None,
-        MT_Plus,
-        MT_Square,
-        MT_Star,
-        MT_Triangle,
-        MT_X
-    };
+    ChartLine() : enable(false) { }
 
-    Marker(MarkerType type = MT_Auto, unsigned size = 20);
-    ~Marker();
-
-    inline void setMarkerType(MarkerType type) { symbol = type; }
-    inline void setMarkerSize(unsigned value) { size = value; }
-
-    inline MarkerType markerType() const { return symbol; }
-    inline unsigned   markerSize() const { return size; }
-
-    QString getType();
-
-    void setLineColor(const QColor& color);
-    void writeLineColorToXml(QXmlStreamWriter &writer);
+    void setColor(QColor color) {
+        enable = true;
+        xcolor = XlsxColor(color);
+    }
+    XlsxColor getColor() const { return xcolor; }
+    bool isEnable() { return enable; }
 
 private:
-    MarkerPrivate * d_ptr;
-
-    MarkerType symbol;     // <c:symbol>
-    unsigned size;         // <c:size>
-
-    //ChartShapeProperties // <c:spPr>
-/* ChartShapeProperties
-  \PresetGeometry,
-  \CustomGeometry,
-  \Transform2D
-  \NoFill,        // <a::noFill>
-  \SolidFill,     // <a:solidFill>
-  \GradientFill,
-  \BlipFill,
-  \PatternFill,
-  \Outline,
-  \EffectList,    // <a::effectLst>
-  \EffectDag,
-  \Scene3DType,
-  \Shape3DType,
-  \ExtensionList
-*/
-    //ExtensionList        //<c:extLst>
+    XlsxColor xcolor;
+    bool      enable;
 };
 
-QT_END_NAMESPACE_XLSX
+class MarkerPrivate
+{
+    Q_DECLARE_PUBLIC(Marker)
 
-#endif // QXLSX_MARKER_H
+public:
+    MarkerPrivate(Marker *p);
+    MarkerPrivate(const MarkerPrivate * const mp);
+    ~MarkerPrivate();
+
+    ChartLine line;
+    Marker *q_ptr;
+};
+
+} // namespace QXlsx
+
+#endif // QXLSX_MARKER_P_H
