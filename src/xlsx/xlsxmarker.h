@@ -54,6 +54,7 @@ public:
         MT_X
     };
 
+    Marker(const QColor& color, MarkerType type = MT_Auto, unsigned size = 20);
     Marker(MarkerType type = MT_Auto, unsigned size = 20);
     ~Marker();
 

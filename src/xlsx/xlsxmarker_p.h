@@ -50,13 +50,20 @@ class ChartLine
 {
 public:
     ChartLine() : enable(false) { }
+    ChartLine(const ChartLine& line) {
+        enable = line.isEnable();
+        xcolor = line.getColor();
+    }
+    ChartLine(const QColor& color) {
+        setColor(color);
+    }
 
-    void setColor(QColor color) {
+    void setColor(const QColor& color) {
         enable = true;
         xcolor = XlsxColor(color);
     }
     XlsxColor getColor() const { return xcolor; }
-    bool isEnable() { return enable; }
+    bool isEnable() const { return enable; }
 
 private:
     XlsxColor xcolor;
@@ -69,11 +76,12 @@ class MarkerPrivate
 
 public:
     MarkerPrivate(Marker *p);
+    MarkerPrivate(Marker *p, const QColor& color);
     MarkerPrivate(const MarkerPrivate * const mp);
     ~MarkerPrivate();
 
-    ChartLine line;
     Marker *q_ptr;
+    ChartLine line;
 };
 
 } // namespace QXlsx

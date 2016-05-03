@@ -38,6 +38,12 @@ MarkerPrivate::MarkerPrivate(Marker *p) :
 
 }
 
+MarkerPrivate::MarkerPrivate(Marker *p, const QColor& color) :
+    q_ptr(p), line(color)
+{
+
+}
+
 MarkerPrivate::MarkerPrivate(const MarkerPrivate * const mp) :
     line(mp->line)
 {
@@ -74,6 +80,13 @@ MarkerPrivate::~MarkerPrivate()
 /*!
  * \internal
  */
+
+Marker::Marker(const QColor& color, MarkerType type, unsigned size)
+    : d_ptr(new MarkerPrivate(this, color)), symbol(type), size(size)
+{
+
+}
+
 Marker::Marker(MarkerType type, unsigned size)
     : d_ptr(new MarkerPrivate(this)), symbol(type), size(size)
 {
