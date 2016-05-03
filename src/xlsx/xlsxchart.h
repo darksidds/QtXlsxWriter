@@ -45,20 +45,20 @@ class Marker
 {
 public:
     enum MarkerType {
-        MT_Automatic,
-        MT_None,
-        MT_Square,
-        MT_Diamond,
-        MT_Triangle,
-        MT_X,
-        MT_Star,
-        MT_Short_dash,
-        MT_Long_dash,
+        MT_Auto,
         MT_Circle,
-        MT_Plus
+        MT_Dash,
+        MT_Diamond,
+        MT_Dot,
+        MT_None,
+        MT_Plus,
+        MT_Square,
+        MT_Star,
+        MT_Triangle,
+        MT_X
     };
 
-    Marker(MarkerType type = MT_Automatic, unsigned size = 20)
+    Marker(MarkerType type = MT_Auto, unsigned size = 20)
         : type(type), size(size) { }
 
     inline void setMarkerType(MarkerType type) { this->type = type; }
@@ -69,30 +69,30 @@ public:
 
     QString getType() {
         switch (type) {
-            case MT_Automatic:
-                return QLatin1String("automatic");
-            case MT_None:
-                return QLatin1String("none");
-            case MT_Square:
-                return QLatin1String("square");
+            case MT_Auto:
+                return QLatin1String("auto");
+            case MT_Circle:
+                return QLatin1String("circle");
+            case MT_Dash:
+                return QLatin1String("dash");
             case MT_Diamond:
                 return QLatin1String("diamond");
+            case MT_Dot:
+                return QLatin1String("dot");
+            case MT_None:
+                return QLatin1String("none");
+            case MT_Plus:
+                return QLatin1String("plus");
+            case MT_Square:
+                return QLatin1String("square");
+            case MT_Star:
+                return QLatin1String("star");
             case MT_Triangle:
                 return QLatin1String("triangle");
             case MT_X:
                 return QLatin1String("x");
-            case MT_Star:
-                return QLatin1String("star");
-            case MT_Short_dash:
-                return QLatin1String("short_dash");
-            case MT_Long_dash:
-                return QLatin1String("long_dash");
-            case MT_Circle:
-                return QLatin1String("circle");
-            case MT_Plus:
-                return QLatin1String("plus");
             default:
-                return QLatin1String("automatic");
+                return QLatin1String("auto");
         }
     }
 
