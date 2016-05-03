@@ -70,29 +70,29 @@ public:
     QString getType() {
         switch (type) {
             case MT_Automatic:
-                return QString::fromStdString("automatic");
+                return QLatin1String("automatic");
             case MT_None:
-                return QString::fromStdString("none");
+                return QLatin1String("none");
             case MT_Square:
-                return QString::fromStdString("square");
+                return QLatin1String("square");
             case MT_Diamond:
-                return QString::fromStdString("diamond");
+                return QLatin1String("diamond");
             case MT_Triangle:
-                return QString::fromStdString("triangle");
+                return QLatin1String("triangle");
             case MT_X:
-                return QString::fromStdString("x");
+                return QLatin1String("x");
             case MT_Star:
-                return QString::fromStdString("star");
+                return QLatin1String("star");
             case MT_Short_dash:
-                return QString::fromStdString("short_dash");
+                return QLatin1String("short_dash");
             case MT_Long_dash:
-                return QString::fromStdString("long_dash");
+                return QLatin1String("long_dash");
             case MT_Circle:
-                return QString::fromStdString("circle");
+                return QLatin1String("circle");
             case MT_Plus:
-                return QString::fromStdString("plus");
+                return QLatin1String("plus");
             default:
-                return QString::fromStdString("automatic");
+                return QLatin1String("automatic");
         }
     }
 
