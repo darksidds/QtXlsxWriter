@@ -171,6 +171,12 @@ void Chart::setChartStyle(int id)
     //!Todo
 }
 
+void Chart::setChartTytle(const QString &title)
+{
+    Q_D(Chart);
+    d->title = title;
+}
+
 /*!
  * \internal
  */
@@ -347,6 +353,25 @@ QString ChartPrivate::loadXmlNumRef(QXmlStreamReader &reader)
 void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
 {
     writer.writeStartElement(QStringLiteral("c:chart"));
+    if (!title.isEmpty()) {
+        // write title
+        writer.writeStartElement(QStringLiteral("c:title"));
+        writer.writeStartElement(QStringLiteral("c:tx"));
+        writer.writeStartElement(QStringLiteral("c:rich"));
+        writer.writeStartElement(QStringLiteral("a:p"));
+        writer.writeStartElement(QStringLiteral("a:r"));
+        writer.writeStartElement(QStringLiteral("a:t"));
+        writer.writeCharacters(title);
+        writer.writeEndElement(); //a:t
+        writer.writeEndElement(); //a:r
+        writer.writeEndElement(); //a:p
+        writer.writeEndElement(); //c:rich
+        writer.writeEndElement(); //c:tx
+        writer.writeEndElement(); //c:title
+        //writer.writeStartElement(QStringLiteral("c:autoTitleDeleted"));
+        //writer.writeAttribute(QStringLiteral("val"), 0);
+        //writer.writeEndElement(); //c:autoTitleDeleted
+    }
     writer.writeStartElement(QStringLiteral("c:plotArea"));
     switch (chartType) {
     case Chart::CT_Pie:

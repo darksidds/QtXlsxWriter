@@ -71,6 +71,7 @@ public:
     void addSeries(const CellRange &range, AbstractSheet *sheet = 0, Marker marker = Marker());
     void setChartType(ChartType type);
     void setChartStyle(int id);
+    void setChartTytle(const QString & title);
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);

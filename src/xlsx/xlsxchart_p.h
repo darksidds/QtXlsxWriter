@@ -114,6 +114,7 @@ public:
     void saveXmlAxes(QXmlStreamWriter &writer) const;
 
     Chart::ChartType chartType;
+    QString title;
 
     QList<QSharedPointer<XlsxSeries> > seriesList;
     QList<QSharedPointer<XlsxAxis> > axisList;
