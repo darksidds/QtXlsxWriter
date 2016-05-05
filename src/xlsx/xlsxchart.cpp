@@ -559,16 +559,17 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
     writer.writeEmptyElement(QStringLiteral("c:order"));
     writer.writeAttribute(QStringLiteral("val"), QString::number(id));
 
+    if (chartType == Chart::CT_Scatter || chartType == Chart::CT_Line || chartType == Chart::CT_Line3D) {
+        writer.writeStartElement(QStringLiteral("c:marker"));
+        writer.writeEmptyElement(QStringLiteral("c:symbol"));
+        writer.writeAttribute(QStringLiteral("val"), ser->marker.getType());
+        writer.writeEndElement();//c:marker
+    }
+    if (chartType == Chart::CT_Scatter) {
+        ser->marker.writeLineColorToXml(writer);
+    }
+
     if (!ser->axDataSource_numRef.isEmpty()) {
-        if (chartType == Chart::CT_Scatter || chartType == Chart::CT_Line || chartType == Chart::CT_Line3D) {
-            writer.writeStartElement(QStringLiteral("c:marker"));
-            writer.writeEmptyElement(QStringLiteral("c:symbol"));
-            writer.writeAttribute(QStringLiteral("val"), ser->marker.getType());
-            writer.writeEndElement();//c:marker
-        }
-        if (chartType == Chart::CT_Scatter) {
-            ser->marker.writeLineColorToXml(writer);
-        }
         if (chartType == Chart::CT_Scatter || chartType == Chart::CT_Bubble)
             writer.writeStartElement(QStringLiteral("c:xVal"));
         else
