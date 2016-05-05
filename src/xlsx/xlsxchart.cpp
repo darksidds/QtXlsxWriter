@@ -192,6 +192,22 @@ void Chart::saveToXmlFile(QIODevice *device) const
     writer.writeAttribute(QStringLiteral("xmlns:a"), QStringLiteral("http://schemas.openxmlformats.org/drawingml/2006/main"));
     writer.writeAttribute(QStringLiteral("xmlns:r"), QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"));
 
+    writer.writeStartElement(QStringLiteral("mc:AlternateContent"));
+    writer.writeAttribute(QStringLiteral("xmlns:mc"), QStringLiteral("http://schemas.openxmlformats.org/markup-compatibility/2006"));
+    writer.writeStartElement(QStringLiteral("mc:Choice"));
+    writer.writeAttribute(QStringLiteral("Requires"), QStringLiteral("c14"));
+    writer.writeAttribute(QStringLiteral("xmlns:c14"), QStringLiteral("http://schemas.microsoft.com/office/drawing/2007/8/2/chart"));
+    writer.writeStartElement(QStringLiteral("c14:style"));
+    writer.writeAttribute(QStringLiteral("val"), QStringLiteral("102"));
+    writer.writeEndElement();//c14:style
+    writer.writeEndElement();//mc:Choice
+    writer.writeStartElement(QStringLiteral("mc:Fallback"));
+    writer.writeStartElement(QStringLiteral("c:style"));
+    writer.writeAttribute(QStringLiteral("val"), QStringLiteral("2"));
+    writer.writeEndElement();//c:style
+    writer.writeEndElement();//mc:Fallback
+    writer.writeEndElement();//mc:AlternateContent
+
     d->saveXmlChart(writer);
 
     writer.writeEndElement();//c:chartSpace
@@ -358,19 +374,38 @@ void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
         writer.writeStartElement(QStringLiteral("c:title"));
         writer.writeStartElement(QStringLiteral("c:tx"));
         writer.writeStartElement(QStringLiteral("c:rich"));
+        writer.writeEmptyElement(QStringLiteral("a:bodyPr"));
+        writer.writeEmptyElement(QStringLiteral("a:lstStyle"));
         writer.writeStartElement(QStringLiteral("a:p"));
+        writer.writeStartElement(QStringLiteral("a:pPr"));
+        writer.writeEmptyElement(QStringLiteral("a:defRPr"));
+        writer.writeEndElement(); //a:pPr
         writer.writeStartElement(QStringLiteral("a:r"));
+        writer.writeStartElement(QStringLiteral("a:rPr"));
+        writer.writeAttribute(QStringLiteral("lang"), QStringLiteral("en-US"));
+        writer.writeEndElement(); //a:rPr
         writer.writeStartElement(QStringLiteral("a:t"));
         writer.writeCharacters(title);
         writer.writeEndElement(); //a:t
         writer.writeEndElement(); //a:r
+
+        writer.writeStartElement(QStringLiteral("a:endParaRPr"));
+        writer.writeAttribute(QStringLiteral("lang"), QStringLiteral("en-US"));
+        writer.writeEndElement(); //a:endParaRPr
+
         writer.writeEndElement(); //a:p
         writer.writeEndElement(); //c:rich
         writer.writeEndElement(); //c:tx
+
+        writer.writeStartElement(QStringLiteral("c:overlay"));
+        writer.writeAttribute(QStringLiteral("val"), QStringLiteral("0"));
+        writer.writeEndElement(); //c:overlay
+
         writer.writeEndElement(); //c:title
-        //writer.writeStartElement(QStringLiteral("c:autoTitleDeleted"));
-        //writer.writeAttribute(QStringLiteral("val"), 0);
-        //writer.writeEndElement(); //c:autoTitleDeleted
+
+        writer.writeStartElement(QStringLiteral("c:autoTitleDeleted"));
+        writer.writeAttribute(QStringLiteral("val"), QStringLiteral("0"));
+        writer.writeEndElement(); //c:autoTitleDeleted
     }
     writer.writeStartElement(QStringLiteral("c:plotArea"));
     switch (chartType) {
