@@ -72,7 +72,21 @@ public:
     void setChartType(ChartType type);
     void setChartStyle(int id);
     void setChartTytle(const QString & title);
+    // Axis
+    void setValueMaxAxisX(double value);
+    void setValueMinAxisX(double value);
+    void setValueMaxAxisY(double value);
+    void setValueMinAxisY(double value);
+    void setValueMaxAxisZ(double value);
+    void setValueMinAxisZ(double value);
 
+    void setAutoMaxAxisX();
+    void setAutoMinAxisX();
+    void setAutoMaxAxisY();
+    void setAutoMinAxisY();
+    void setAutoMaxAxisZ();
+    void setAutoMinAxisZ();
+    
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);
 
