@@ -83,7 +83,9 @@ public:
     void setAxisMinScope(AxisType, double);
     void setAxisMaxAuto(AxisType);
     void setAxisMinAuto(AxisType);
-    
+    void enableAxisMajorGridLines(AxisType, bool);
+    void enableAxisMinorGridLines(AxisType, bool);
+
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);
 

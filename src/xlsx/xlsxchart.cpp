@@ -133,7 +133,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, Marker marke
             axDataSouruce_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
         }
 
-        for (int col=firstDataColumn; col<=range.lastColumn(); ++col) {
+        for (int col = firstDataColumn; col <= range.lastColumn(); ++col) {
             CellRange subRange(range.firstRow(), col, range.lastRow(), col);
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
             series->axDataSource_numRef = axDataSouruce_numRef;
@@ -152,7 +152,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, Marker marke
             axDataSouruce_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
         }
 
-        for (int row=firstDataRow; row<=range.lastRow(); ++row) {
+        for (int row = firstDataRow; row <= range.lastRow(); ++row) {
             CellRange subRange(row, range.firstColumn(), row, range.lastColumn());
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
             series->axDataSource_numRef = axDataSouruce_numRef;
@@ -297,6 +297,50 @@ void Chart::setAxisMinAuto(AxisType type)
     }
     if (index != -1)
         d->axisList[index]->minValue.setAuto();
+}
+
+void Chart::enableAxisMajorGridLines(AxisType type, bool activate)
+{
+    Q_D(Chart);
+    int index = -1;
+    switch (type) {
+    case AT_X:
+        Q_ASSERT(!d->axisList.isEmpty());
+        index = 0;
+        break;
+    case AT_Y:
+        Q_ASSERT(d->axisList.size() > 1);
+        index = 1;
+        break;
+    case AT_Z:
+        Q_ASSERT(d->axisList.size() == 3);
+        index = 2;
+        break;
+    }
+    if (index != -1)
+        d->axisList[index]->majorLines = activate;
+}
+
+void Chart::enableAxisMinorGridLines(AxisType type, bool activate)
+{
+    Q_D(Chart);
+    int index = -1;
+    switch (type) {
+    case AT_X:
+        Q_ASSERT(!d->axisList.isEmpty());
+        index = 0;
+        break;
+    case AT_Y:
+        Q_ASSERT(d->axisList.size() > 1);
+        index = 1;
+        break;
+    case AT_Z:
+        Q_ASSERT(d->axisList.size() == 3);
+        index = 2;
+        break;
+    }
+    if (index != -1)
+        d->axisList[index]->minorLines = activate;
 }
 
 /*!
@@ -677,7 +721,7 @@ void ChartPrivate::saveXmlAreaChart(QXmlStreamWriter &writer) const
     }
 
     //Note: Area3D have 2~3 axes
-    Q_ASSERT(axisList.size() == 2 || (axisList.size() == 3 && chartType==Chart::CT_Area3D));
+    Q_ASSERT(axisList.size() == 2 || (axisList.size() == 3 && chartType == Chart::CT_Area3D));
 
     for (int i = 0; i < axisList.size(); ++i) {
         writer.writeEmptyElement(QStringLiteral("c:axId"));
@@ -837,6 +881,32 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
         writer.writeEmptyElement(QStringLiteral("c:axPos"));
         writer.writeAttribute(QStringLiteral("val"), pos);
 
+        if (axis->majorLines) {
+            writer.writeStartElement(QStringLiteral("c:majorGridlines"));
+            writer.writeStartElement(QStringLiteral("c:spPr"));
+            writer.writeStartElement(QStringLiteral("a:ln"));
+            writer.writeStartElement(QStringLiteral("a:solidFill"));
+            writer.writeStartElement(QStringLiteral("a:srgbClr"));
+            writer.writeAttribute(QStringLiteral("val"), QStringLiteral("b3b3b3"));
+            writer.writeEndElement();//a:srgbClr
+            writer.writeEndElement();//a:solidFill
+            writer.writeEndElement();//a:ln
+            writer.writeEndElement();//c:spPr
+            writer.writeEndElement();//c:majorGridlines
+        }
+        if (axis->minorLines) {
+            writer.writeStartElement(QStringLiteral("c:minorGridlines"));
+            writer.writeStartElement(QStringLiteral("c:spPr"));
+            writer.writeStartElement(QStringLiteral("a:ln"));
+            writer.writeStartElement(QStringLiteral("a:solidFill"));
+            writer.writeStartElement(QStringLiteral("a:srgbClr"));
+            writer.writeAttribute(QStringLiteral("val"), QStringLiteral("dddddd"));
+            writer.writeEndElement();//a:srgbClr
+            writer.writeEndElement();//a:solidFill
+            writer.writeEndElement();//a:ln
+            writer.writeEndElement();//c:spPr
+            writer.writeEndElement();//c:minorGridlines
+        }
         writer.writeEmptyElement(QStringLiteral("c:crossAx"));
         writer.writeAttribute(QStringLiteral("val"), QString::number(axis->crossAx));
 
