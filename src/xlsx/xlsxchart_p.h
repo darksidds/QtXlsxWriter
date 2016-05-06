@@ -56,7 +56,7 @@ public:
     Marker  marker;
 };
 
-class XlsxAxisValue
+class AxisScope
 {
 public:
     enum Type
@@ -65,7 +65,7 @@ public:
         T_Value
     };
 
-    XlsxAxisValue(Type type = T_Auto, double value = 0.0) :type(type), value(value) { }
+    AxisScope(Type type = T_Auto, double value = 0.0) :type(type), value(value) { }
 
     void setAuto() {
         type = T_Auto;
@@ -114,8 +114,10 @@ public:
 
     XlsxAxis() { }
 
-    XlsxAxis(Type t, Pos p, int id, int crossId, XlsxAxisValue minValue, XlsxAxisValue maxValue)
-        :type(t), axisPos(p), axisId(id), crossAx(crossId), minValue(minValue), maxValue(maxValue)
+    XlsxAxis(Type t, Pos p, int id, int crossId, AxisScope minValue = AxisScope(),
+             AxisScope maxValue = AxisScope(), bool major = false, bool minor = false)
+        : type(t), axisPos(p), axisId(id), crossAx(crossId), minValue(minValue),
+          maxValue(maxValue), majorLines(major), minorLines(minor)
     {
     }
 
@@ -123,8 +125,10 @@ public:
     Pos axisPos; //l,r,b,t
     int axisId;
     int crossAx;
-    XlsxAxisValue minValue;
-    XlsxAxisValue maxValue;
+    AxisScope minValue;
+    AxisScope maxValue;
+    bool majorLines;
+    bool minorLines;
 };
 
 class ChartPrivate : public AbstractOOXmlFilePrivate
@@ -154,14 +158,7 @@ public:
 
     Chart::ChartType chartType;
     QString title;
-    // for set min-max axis values
-    XlsxAxisValue axisMinX;
-    XlsxAxisValue axisMaxX;
-    XlsxAxisValue axisMinY;
-    XlsxAxisValue axisMaxY;
-    XlsxAxisValue axisMinZ;
-    XlsxAxisValue axisMaxZ;
-    
+
     QList<QSharedPointer<XlsxSeries> > seriesList;
     QList<QSharedPointer<XlsxAxis> > axisList;
 

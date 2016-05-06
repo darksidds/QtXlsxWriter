@@ -66,26 +66,23 @@ public:
         CT_Bubble
     };
 
+    enum AxisType {
+        AT_X,
+        AT_Y,
+        AT_Z
+    };
+
     ~Chart();
 
     void addSeries(const CellRange &range, AbstractSheet *sheet = 0, Marker marker = Marker());
     void setChartType(ChartType type);
     void setChartStyle(int id);
     void setChartTytle(const QString & title);
-    // Axis
-    void setValueMaxAxisX(double value);
-    void setValueMinAxisX(double value);
-    void setValueMaxAxisY(double value);
-    void setValueMinAxisY(double value);
-    void setValueMaxAxisZ(double value);
-    void setValueMinAxisZ(double value);
 
-    void setAutoMaxAxisX();
-    void setAutoMinAxisX();
-    void setAutoMaxAxisY();
-    void setAutoMinAxisY();
-    void setAutoMaxAxisZ();
-    void setAutoMinAxisZ();
+    void setAxisMaxScope(AxisType, double);
+    void setAxisMinScope(AxisType, double);
+    void setAxisMaxAuto(AxisType);
+    void setAxisMinAuto(AxisType);
     
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);
