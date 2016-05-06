@@ -177,6 +177,78 @@ void Chart::setChartTytle(const QString &title)
     d->title = title;
 }
 
+void Chart::setValueMaxAxisX(double value)
+{
+    Q_D(Chart);
+    d->axisMaxX.setValue(value);
+}
+
+void Chart::setValueMinAxisX(double value)
+{
+    Q_D(Chart);
+    d->axisMinX.setValue(value);
+}
+
+void Chart::setValueMaxAxisY(double value)
+{
+    Q_D(Chart);
+    d->axisMaxY.setValue(value);
+}
+
+void Chart::setValueMinAxisY(double value)
+{
+    Q_D(Chart);
+    d->axisMinY.setValue(value);
+}
+
+void Chart::setValueMaxAxisZ(double value)
+{
+    Q_D(Chart);
+    d->axisMaxZ.setValue(value);
+}
+
+void Chart::setValueMinAxisZ(double value)
+{
+    Q_D(Chart);
+    d->axisMinZ.setValue(value);
+}
+
+void Chart::setAutoMaxAxisX()
+{
+    Q_D(Chart);
+    d->axisMaxX.setAuto();
+}
+
+void Chart::setAutoMinAxisX()
+{
+    Q_D(Chart);
+    d->axisMinX.setAuto();
+}
+
+void Chart::setAutoMaxAxisY()
+{
+    Q_D(Chart);
+    d->axisMaxY.setAuto();
+}
+
+void Chart::setAutoMinAxisY()
+{
+    Q_D(Chart);
+    d->axisMinY.setAuto();
+}
+
+void Chart::setAutoMaxAxisZ()
+{
+    Q_D(Chart);
+    d->axisMaxZ.setAuto();
+}
+
+void Chart::setAutoMinAxisZ()
+{
+    Q_D(Chart);
+    d->axisMinZ.setAuto();
+}
+
 /*!
  * \internal
  */
@@ -472,8 +544,8 @@ void ChartPrivate::saveXmlBarChart(QXmlStreamWriter &writer) const
 
     if (axisList.isEmpty()) {
         //The order the axes??
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Cat, XlsxAxis::Bottom, 0, 1)));
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Cat, XlsxAxis::Bottom, 0, 1, axisMinX, axisMaxX)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0, axisMinY, axisMaxY)));
     }
 
     //Note: Bar3D have 2~3 axes
@@ -499,10 +571,10 @@ void ChartPrivate::saveXmlLineChart(QXmlStreamWriter &writer) const
         saveXmlSer(writer, seriesList[i].data(), i);
 
     if (axisList.isEmpty()) {
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Cat, XlsxAxis::Bottom, 0, 1)));
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Cat, XlsxAxis::Bottom, 0, 1, axisMinX, axisMaxX)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0, axisMinY, axisMaxY)));
         if (chartType==Chart::CT_Line3D)
-            const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Ser, XlsxAxis::Bottom, 2, 0)));
+            const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Ser, XlsxAxis::Bottom, 2, 0, axisMinZ, axisMaxZ)));
     }
 
     Q_ASSERT((axisList.size()==2||chartType==Chart::CT_Line)|| (axisList.size()==3 && chartType==Chart::CT_Line3D));
@@ -527,8 +599,8 @@ void ChartPrivate::saveXmlScatterChart(QXmlStreamWriter &writer) const
         saveXmlSer(writer, seriesList[i].data(), i);
 
     if (axisList.isEmpty()) {
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Bottom, 0, 1)));
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Bottom, 0, 1, axisMinX, axisMaxX)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0, axisMinY, axisMaxY)));
     }
 
     Q_ASSERT(axisList.size()==2);
@@ -553,8 +625,8 @@ void ChartPrivate::saveXmlAreaChart(QXmlStreamWriter &writer) const
         saveXmlSer(writer, seriesList[i].data(), i);
 
     if (axisList.isEmpty()) {
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Cat, XlsxAxis::Bottom, 0, 1)));
-        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Cat, XlsxAxis::Bottom, 0, 1, axisMinX, axisMaxX)));
+        const_cast<ChartPrivate*>(this)->axisList.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0, axisMinY, axisMaxY)));
     }
 
     //Note: Area3D have 2~3 axes
@@ -703,6 +775,16 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
         writer.writeStartElement(QStringLiteral("c:scaling"));
         writer.writeEmptyElement(QStringLiteral("c:orientation"));
         writer.writeAttribute(QStringLiteral("val"), QStringLiteral("minMax"));
+        if (!axis->maxValue.isAuto()) {
+            writer.writeStartElement(QStringLiteral("c:max"));
+            writer.writeAttribute(QStringLiteral("val"), QString::number(axis->maxValue.getValue()));
+            writer.writeEndElement();//c:max
+        }
+        if (!axis->minValue.isAuto()) {
+            writer.writeStartElement(QStringLiteral("c:min"));
+            writer.writeAttribute(QStringLiteral("val"), QString::number(axis->minValue.getValue()));
+            writer.writeEndElement();//c:min
+        }
         writer.writeEndElement();//c:scaling
 
         writer.writeEmptyElement(QStringLiteral("c:axPos"));
