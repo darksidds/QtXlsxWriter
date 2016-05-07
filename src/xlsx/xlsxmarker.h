@@ -34,6 +34,7 @@ class QXmlStreamWriter;
 
 QT_BEGIN_NAMESPACE_XLSX
 
+class ChartLine;
 class MarkerPrivate;
 class Q_XLSX_EXPORT Marker
 {
@@ -54,7 +55,6 @@ public:
         MT_X
     };
 
-    Marker(const QColor& color, MarkerType type = MT_Auto, unsigned size = 20);
     Marker(MarkerType type = MT_Auto, unsigned size = 20);
     ~Marker();
 
@@ -66,10 +66,9 @@ public:
 
     QString getType();
 
-    void setLineColor(const QColor& color);
-    void writeLineColorToXml(QXmlStreamWriter &writer);
-
 private:
+    friend class ChartLine;
+
     MarkerPrivate * d_ptr;
 
     MarkerType symbol;     // <c:symbol>
@@ -93,6 +92,30 @@ private:
   \ExtensionList
 */
     //ExtensionList        //<c:extLst>
+};
+
+class ChartLinePrivate;
+class Q_XLSX_EXPORT ChartLine
+{
+    Q_DECLARE_PRIVATE(ChartLine)
+
+public:
+    ChartLine(const QColor& color, Marker marker = Marker(), bool wide = true);
+    ChartLine(Marker marker = Marker(), bool wide = true);
+    ~ChartLine();
+
+    void setLineWide(bool);
+    bool isLineWide() const;
+    void setColor(const QColor& color);
+    QString getColor() const;
+    bool isCustomColor() const;
+
+    Marker  marker;
+
+private:
+    ChartLinePrivate * d_ptr;
+
+    bool    wide;
 };
 
 QT_END_NAMESPACE_XLSX

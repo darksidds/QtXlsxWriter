@@ -38,37 +38,14 @@
 //
 
 #include "xlsxmarker.h"
-#include "xlsxcolor_p.h"
 
 #include <QSharedPointer>
+#include <QColor>
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
 
 namespace QXlsx {
-class ChartLine
-{
-public:
-    ChartLine() : enable(false) { }
-    ChartLine(const ChartLine& line) {
-        enable = line.isEnable();
-        xcolor = line.getColor();
-    }
-    ChartLine(const QColor& color) {
-        setColor(color);
-    }
-
-    void setColor(const QColor& color) {
-        enable = true;
-        xcolor = XlsxColor(color);
-    }
-    XlsxColor getColor() const { return xcolor; }
-    bool isEnable() const { return enable; }
-
-private:
-    XlsxColor xcolor;
-    bool      enable;
-};
 
 class MarkerPrivate
 {
@@ -76,12 +53,37 @@ class MarkerPrivate
 
 public:
     MarkerPrivate(Marker *p);
-    MarkerPrivate(Marker *p, const QColor& color);
-    MarkerPrivate(const MarkerPrivate * const mp);
+    MarkerPrivate(const MarkerPrivate * const);
     ~MarkerPrivate();
 
     Marker *q_ptr;
-    ChartLine line;
+
+private:
+};
+
+class ChartLinePrivate
+{
+    Q_DECLARE_PUBLIC(ChartLine)
+
+public:
+    ChartLinePrivate(ChartLine *p);
+    ChartLinePrivate(ChartLine *p, const QColor& color);
+    ChartLinePrivate(const ChartLinePrivate * const mp);
+
+    ~ChartLinePrivate();
+
+    void setColor(const QColor& color) {
+        enable = true;
+        xcolor = color;
+    }
+    QColor getColor() const { return xcolor; }
+    bool   isEnable() const { return enable; }
+
+private:
+    ChartLine *q_ptr;
+
+    QColor  xcolor;
+    bool    enable;
 };
 
 } // namespace QXlsx

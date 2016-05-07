@@ -38,14 +38,7 @@ MarkerPrivate::MarkerPrivate(Marker *p) :
 
 }
 
-MarkerPrivate::MarkerPrivate(Marker *p, const QColor& color) :
-    q_ptr(p), line(color)
-{
-
-}
-
-MarkerPrivate::MarkerPrivate(const MarkerPrivate * const mp) :
-    line(mp->line)
+MarkerPrivate::MarkerPrivate(const MarkerPrivate * const)
 {
 
 }
@@ -81,12 +74,6 @@ MarkerPrivate::~MarkerPrivate()
  * \internal
  */
 
-Marker::Marker(const QColor& color, MarkerType type, unsigned size)
-    : d_ptr(new MarkerPrivate(this, color)), symbol(type), size(size)
-{
-
-}
-
 Marker::Marker(MarkerType type, unsigned size)
     : d_ptr(new MarkerPrivate(this)), symbol(type), size(size)
 {
@@ -96,6 +83,7 @@ Marker::Marker(MarkerType type, unsigned size)
 /*!
  * Destroys the marker.
  */
+
 Marker::~Marker()
 {
     
@@ -130,26 +118,125 @@ QString Marker::getType() {
     }
 }
 
-void Marker::setLineColor(const QColor& color) {
-    Q_D(Marker);
-    d->line.setColor(color);
+/*!
+ *
+ */
+
+ChartLinePrivate::ChartLinePrivate(ChartLine *p) :
+    q_ptr(p), enable(false)
+{
+
 }
 
-void Marker::writeLineColorToXml(QXmlStreamWriter &writer)
+ChartLinePrivate::ChartLinePrivate(ChartLine *p, const QColor& color) :
+    q_ptr(p), xcolor(color), enable(false)
 {
-    Q_D(Marker);
-    if (d->line.isEnable()) {
-        writer.writeStartElement(QStringLiteral("c:spPr"));
-        writer.writeStartElement(QStringLiteral("a:ln"));
-        writer.writeStartElement(QStringLiteral("a:solidFill"));
-        writer.writeStartElement(QStringLiteral("a:srgbClr"));
-        writer.writeAttribute(QStringLiteral("val"),
-                              XlsxColor::toARGBString(d->line.getColor().rgbColor())); // write color
-        writer.writeEndElement();//a:srgbClr
-        writer.writeEndElement();//a:solidFill
-        writer.writeEndElement();//a:ln
-        writer.writeEndElement();//c:spPr
+
+}
+
+ChartLinePrivate::ChartLinePrivate(const ChartLinePrivate * const mp) :
+    xcolor(mp->xcolor), enable(mp->enable)
+{
+
+}
+
+ChartLinePrivate::~ChartLinePrivate()
+{
+
+}
+
+/*!
+ * \class ChartLine
+ * \inmodule QtXlsx
+ * \brief Main class for the lines in chart.
+ */
+
+/*!
+ * \internal
+ */
+
+ChartLine::ChartLine(const QColor& color, Marker marker, bool wide)
+    : marker(marker), d_ptr(new ChartLinePrivate(this, color)), wide(wide)
+{
+
+}
+
+ChartLine::ChartLine(Marker marker, bool wide)
+    : marker(marker), d_ptr(new ChartLinePrivate(this)), wide(wide)
+{
+
+}
+
+/*!
+ * Destroys the chart line.
+ */
+
+ChartLine::~ChartLine()
+{
+
+}
+
+void ChartLine::setLineWide(bool isWide)
+{
+    wide = isWide;
+}
+
+bool ChartLine::isLineWide() const
+{
+    return wide;
+}
+
+void ChartLine::setColor(const QColor& color) {
+    Q_D(ChartLine);
+    d->setColor(color);
+}
+
+QString hexFromInt(int value)
+{
+    switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9: return QString::number(value);
+    case 10: return QLatin1String("A");
+    case 11: return QLatin1String("B");
+    case 12: return QLatin1String("C");
+    case 13: return QLatin1String("D");
+    case 14: return QLatin1String("E");
+    case 15: return QLatin1String("F");
+    default: return QLatin1String("");
     }
+}
+
+QString hexColor(const QColor& color)
+{
+    QString result = QLatin1String("");
+    result += hexFromInt(color.red() / 16);
+    result += hexFromInt(color.red() % 16);
+    result += hexFromInt(color.green() / 16);
+    result += hexFromInt(color.green() % 16);
+    result += hexFromInt(color.blue() / 16);
+    result += hexFromInt(color.blue() % 16);
+    return result;
+}
+
+QString ChartLine::getColor() const
+{
+    Q_D(const ChartLine);
+
+    return hexColor(d->getColor());
+}
+
+bool ChartLine::isCustomColor() const
+{
+    Q_D(const ChartLine);
+    return d->isEnable();
 }
 
 QT_END_NAMESPACE_XLSX
