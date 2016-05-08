@@ -72,6 +72,14 @@ public:
         AT_Z
     };
 
+    enum Pos
+    {
+        Left,
+        Right,
+        Top,
+        Bottom
+    };
+
     ~Chart();
 
     void addSeries(const CellRange &range, AbstractSheet *sheet = 0, ChartLine line = ChartLine());
@@ -85,6 +93,8 @@ public:
     void setAxisMinAuto(AxisType);
     void enableAxisMajorGridLines(AxisType, bool);
     void enableAxisMinorGridLines(AxisType, bool);
+
+    void setShowLegend(bool, Pos);
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);

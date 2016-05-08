@@ -343,6 +343,13 @@ void Chart::enableAxisMinorGridLines(AxisType type, bool activate)
         d->axisList[index]->minorLines = activate;
 }
 
+void Chart::setShowLegend(bool show, Pos pos)
+{
+    Q_D(Chart);
+    d->legend.show = show;
+    d->legend.pos  = pos;
+}
+
 /*!
  * \internal
  */
@@ -603,7 +610,7 @@ void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
     saveXmlAxes(writer);
     writer.writeEndElement(); //plotArea
 
-//    saveXmlLegend(writer);
+    saveXmlLegend(writer);
 
     writer.writeEndElement(); //chart
 }
@@ -756,6 +763,16 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
     writer.writeAttribute(QStringLiteral("val"), QString::number(id));
     writer.writeEmptyElement(QStringLiteral("c:order"));
     writer.writeAttribute(QStringLiteral("val"), QString::number(id));
+
+    if (!ser->line.getName().isEmpty()) {
+        writer.writeStartElement(QStringLiteral("c:tx"));
+        writer.writeStartElement(QStringLiteral("c:strRef"));
+        writer.writeStartElement(QStringLiteral("c:f"));
+        writer.writeCharacters(ser->line.getName());
+        writer.writeEndElement();//c:f
+        writer.writeEndElement();//c:strRef
+        writer.writeEndElement();//c:tx
+    }
 
     writer.writeStartElement(QStringLiteral("c:spPr"));
     if (chartType == Chart::CT_Scatter) {
@@ -935,6 +952,28 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
         writer.writeAttribute(QStringLiteral("val"), QString::number(axis->crossAx));
 
         writer.writeEndElement();//name
+    }
+}
+
+void ChartPrivate::saveXmlLegend(QXmlStreamWriter &writer) const
+{
+    if (legend.show) {
+        writer.writeStartElement(QStringLiteral("c:legend"));
+        writer.writeStartElement(QStringLiteral("c:legendPos"));
+        QString pos;
+        switch (legend.pos) {
+        case Chart::Top:    pos = QStringLiteral("t"); break;
+        case Chart::Bottom: pos = QStringLiteral("b"); break;
+        case Chart::Left:   pos = QStringLiteral("l"); break;
+        case Chart::Right:  pos = QStringLiteral("r"); break;
+        default: break;
+        }
+        writer.writeAttribute(QStringLiteral("val"), pos);
+        writer.writeEndElement();//c:legendPos
+        writer.writeStartElement(QStringLiteral("c:overlay"));
+        writer.writeAttribute(QStringLiteral("val"), QStringLiteral("0"));
+        writer.writeEndElement();//c:overlay
+        writer.writeEndElement();//c:legend
     }
 }
 

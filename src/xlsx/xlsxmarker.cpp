@@ -155,14 +155,14 @@ ChartLinePrivate::~ChartLinePrivate()
  * \internal
  */
 
-ChartLine::ChartLine(const QColor& color, Marker marker, bool wide)
-    : marker(marker), d_ptr(new ChartLinePrivate(this, color)), wide(wide)
+ChartLine::ChartLine(const QColor& color, Marker marker, QString name, bool wide)
+    : marker(marker), d_ptr(new ChartLinePrivate(this, color)), seriesName(name), wide(wide)
 {
 
 }
 
-ChartLine::ChartLine(Marker marker, bool wide)
-    : marker(marker), d_ptr(new ChartLinePrivate(this)), wide(wide)
+ChartLine::ChartLine(Marker marker, QString name, bool wide)
+    : marker(marker), d_ptr(new ChartLinePrivate(this)), seriesName(name), wide(wide)
 {
 
 }
@@ -174,6 +174,16 @@ ChartLine::ChartLine(Marker marker, bool wide)
 ChartLine::~ChartLine()
 {
 
+}
+
+void ChartLine::setName(const QString name)
+{
+    seriesName = name;
+}
+
+QString ChartLine::getName() const
+{
+    return seriesName;
 }
 
 void ChartLine::setLineWide(bool isWide)

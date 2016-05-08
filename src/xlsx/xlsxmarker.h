@@ -100,10 +100,12 @@ class Q_XLSX_EXPORT ChartLine
     Q_DECLARE_PRIVATE(ChartLine)
 
 public:
-    ChartLine(const QColor& color, Marker marker = Marker(), bool wide = true);
-    ChartLine(Marker marker = Marker(), bool wide = true);
+    ChartLine(const QColor& color, Marker marker = Marker(), QString name = QString(), bool wide = true);
+    ChartLine(Marker marker = Marker(), QString name = QString(), bool wide = true);
     ~ChartLine();
 
+    void setName(const QString);
+    QString getName() const;
     void setLineWide(bool);
     bool isLineWide() const;
     void setColor(const QColor& color);
@@ -114,7 +116,7 @@ public:
 
 private:
     ChartLinePrivate * d_ptr;
-
+    QString seriesName;
     bool    wide;
 };
 

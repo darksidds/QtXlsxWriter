@@ -47,6 +47,17 @@ class QXmlStreamWriter;
 
 namespace QXlsx {
 
+class XlsxLegend
+{
+public:
+    XlsxLegend(bool show = false, Chart::Pos pos = Chart::Right) :
+        show(show), pos(pos) { }
+
+    bool show;
+    Chart::Pos pos;
+};
+
+
 class XlsxSeries
 {
 public:
@@ -155,9 +166,11 @@ public:
     void saveXmlDoughnutChart(QXmlStreamWriter &writer) const;
     void saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id) const;
     void saveXmlAxes(QXmlStreamWriter &writer) const;
+    void saveXmlLegend(QXmlStreamWriter &writer) const;
 
     Chart::ChartType chartType;
     QString title;
+    XlsxLegend legend;
 
     QList<QSharedPointer<XlsxSeries> > seriesList;
     QList<QSharedPointer<XlsxAxis> > axisList;
