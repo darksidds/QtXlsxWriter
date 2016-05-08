@@ -53,12 +53,23 @@ class MarkerPrivate
 
 public:
     MarkerPrivate(Marker *p);
+    MarkerPrivate(Marker *p, const QColor& color);
     MarkerPrivate(const MarkerPrivate * const);
     ~MarkerPrivate();
+
+    void setColor(const QColor& color) {
+        enable = true;
+        xcolor = color;
+    }
+    QColor getColor() const { return xcolor; }
+    bool   isEnable() const { return enable; }
 
     Marker *q_ptr;
 
 private:
+
+    QColor  xcolor;
+    bool    enable;
 };
 
 class ChartLinePrivate

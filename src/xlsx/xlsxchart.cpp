@@ -60,6 +60,7 @@ ChartPrivate::~ChartPrivate()
   \value CT_Line,
   \value CT_Line3D,
   \value CT_Scatter,
+  \value CT_ScatterLine,
   \value CT_Pie,
   \value CT_Pie3D,
   \value CT_Doughnut,
@@ -127,7 +128,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, ChartLine li
         //Column based series
         int firstDataColumn = range.firstColumn();
         QString axDataSouruce_numRef;
-        if (d->chartType == CT_Scatter || d->chartType == CT_Bubble) {
+        if (d->chartType == CT_Scatter || d->chartType == CT_ScatterLine || d->chartType == CT_Bubble) {
             firstDataColumn += 1;
             CellRange subRange(range.firstRow(), range.firstColumn(), range.lastRow(), range.firstColumn());
             axDataSouruce_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
@@ -146,7 +147,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, ChartLine li
         //Row based series
         int firstDataRow = range.firstRow();
         QString axDataSouruce_numRef;
-        if (d->chartType == CT_Scatter || d->chartType == CT_Bubble) {
+        if (d->chartType == CT_Scatter || d->chartType == CT_ScatterLine ||d->chartType == CT_Bubble) {
             firstDataRow += 1;
             CellRange subRange(range.firstRow(), range.firstColumn(), range.firstRow(), range.lastColumn());
             axDataSouruce_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
@@ -184,6 +185,7 @@ void Chart::setChartType(ChartType type)
         InsertAxisZ(d->axisList);
         break;
     case Chart::CT_Scatter:
+    case Chart::CT_ScatterLine:
         InsertAxisXY(d->axisList);
         break;
     case Chart::CT_Area:
@@ -353,6 +355,21 @@ void Chart::setShowLegend(bool show, Pos pos)
 /*!
  * \internal
  */
+
+void solidFill(QXmlStreamWriter &writer, QString color)
+{
+    writer.writeStartElement(QStringLiteral("a:solidFill"));
+    writer.writeStartElement(QStringLiteral("a:srgbClr"));
+    writer.writeAttribute(QStringLiteral("val"), color);
+    writer.writeEndElement();//a:srgbClr
+    writer.writeEndElement();//a:solidFill
+}
+
+void noFill(QXmlStreamWriter &writer)
+{
+    writer.writeEmptyElement(QStringLiteral("a:noFill"));
+}
+
 void Chart::saveToXmlFile(QIODevice *device) const
 {
     Q_D(const Chart);
@@ -523,7 +540,6 @@ bool ChartPrivate::loadXmlSer(QXmlStreamReader &reader)
     return true;
 }
 
-
 QString ChartPrivate::loadXmlNumRef(QXmlStreamReader &reader)
 {
     Q_ASSERT(reader.name() == QLatin1String("numRef"));
@@ -595,6 +611,7 @@ void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
         saveXmlLineChart(writer);
         break;
     case Chart::CT_Scatter:
+    case Chart::CT_ScatterLine:
         saveXmlScatterChart(writer);
         break;
     case Chart::CT_Area:
@@ -720,7 +737,7 @@ void ChartPrivate::saveXmlAreaChart(QXmlStreamWriter &writer) const
 
     writer.writeEmptyElement(QStringLiteral("grouping"));
 
-    for (int i=0; i<seriesList.size(); ++i)
+    for (int i = 0; i < seriesList.size(); ++i)
         saveXmlSer(writer, seriesList[i].data(), i);
 
     if (axisList.isEmpty()) {
@@ -775,41 +792,44 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
     }
 
     writer.writeStartElement(QStringLiteral("c:spPr"));
-    if (chartType == Chart::CT_Scatter) {
-        if (ser->line.isCustomColor()) {
-            writer.writeStartElement(QStringLiteral("a:solidFill"));
-            writer.writeStartElement(QStringLiteral("a:srgbClr"));
-            writer.writeAttribute(QStringLiteral("val"), ser->line.getColor());
-            writer.writeEndElement();//a:srgbClr
-            writer.writeEndElement();//a:solidFill
-        }
-    }
     writer.writeStartElement(QStringLiteral("a:ln"));
     if (!ser->line.isLineWide()) {
         writer.writeAttribute(QStringLiteral("w"), QStringLiteral("6480")); // 6480 - small, 28440 - wide
     }
-    if (chartType == Chart::CT_Scatter && ser->line.isCustomColor()) {
-        writer.writeStartElement(QStringLiteral("a:solidFill"));
-        writer.writeStartElement(QStringLiteral("a:srgbClr"));
-        writer.writeAttribute(QStringLiteral("val"), ser->line.getColor());
-        writer.writeEndElement();//a:srgbClr
-        writer.writeEndElement();//a:solidFill
+    // write line color
+    if (chartType == Chart::CT_Scatter) {
+        noFill(writer);
+        if (ser->line.marker.markerType() == Marker::MT_None) {
+            ser->line.marker.setMarkerType(Marker::MT_Auto);
+        }
+    }
+    if (chartType == Chart::CT_ScatterLine && ser->line.isCustomColor()) {
+        solidFill(writer, ser->line.getColor());
     }
     writer.writeEndElement();//a:ln
     writer.writeEndElement();//c:spPr
 
-    if (chartType == Chart::CT_Scatter || chartType == Chart::CT_Line || chartType == Chart::CT_Line3D) {
+    if (chartType == Chart::CT_Scatter || chartType == Chart::CT_ScatterLine
+            || chartType == Chart::CT_Line || chartType == Chart::CT_Line3D) {
         writer.writeStartElement(QStringLiteral("c:marker"));
-        writer.writeEmptyElement(QStringLiteral("c:symbol"));
+        writer.writeStartElement(QStringLiteral("c:symbol"));
         writer.writeAttribute(QStringLiteral("val"), ser->line.marker.getType());
+        writer.writeEndElement();//c:symbol
+        writer.writeStartElement(QStringLiteral("c:size"));
+        writer.writeAttribute(QStringLiteral("val"), QString::number(ser->line.marker.markerSize()));
+        writer.writeEndElement();//c:size
+        // write marker color
+        if (ser->line.marker.isCustomColor()) {
+            writer.writeStartElement(QStringLiteral("c:spPr"));
+            solidFill(writer, ser->line.marker.getColor());
+            writer.writeEndElement();//c:spPr
+        }
         writer.writeEndElement();//c:marker
     }
-    //if (chartType == Chart::CT_Scatter) {
-    //    ser->line.writeColorToXml(writer);
-    //}
 
     if (!ser->axDataSource_numRef.isEmpty()) {
-        if (chartType == Chart::CT_Scatter || chartType == Chart::CT_Bubble)
+        if (chartType == Chart::CT_Scatter || chartType == Chart::CT_ScatterLine
+                || chartType == Chart::CT_Bubble)
             writer.writeStartElement(QStringLiteral("c:xVal"));
         else
             writer.writeStartElement(QStringLiteral("c:cat"));
@@ -820,7 +840,8 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
     }
 
     if (!ser->numberDataSource_numRef.isEmpty()) {
-        if (chartType == Chart::CT_Scatter || chartType == Chart::CT_Bubble)
+        if (chartType == Chart::CT_Scatter || chartType == Chart::CT_ScatterLine
+                || chartType == Chart::CT_Bubble)
             writer.writeStartElement(QStringLiteral("c:yVal"));
         else
             writer.writeStartElement(QStringLiteral("c:val"));

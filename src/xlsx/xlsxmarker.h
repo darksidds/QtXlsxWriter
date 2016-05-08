@@ -55,7 +55,8 @@ public:
         MT_X
     };
 
-    Marker(MarkerType type = MT_Auto, unsigned size = 20);
+    Marker(const QColor& color, MarkerType type = MT_Auto, unsigned size = 5);
+    Marker(MarkerType type = MT_Auto, unsigned size = 5);
     ~Marker();
 
     inline void setMarkerType(MarkerType type) { symbol = type; }
@@ -65,6 +66,10 @@ public:
     inline unsigned   markerSize() const { return size; }
 
     QString getType();
+
+    void setColor(const QColor& color);
+    QString getColor() const;
+    bool isCustomColor() const;
 
 private:
     friend class ChartLine;

@@ -55,6 +55,7 @@ public:
         CT_Stock,
         CT_Radar,
         CT_Scatter,
+        CT_ScatterLine,
         CT_Pie,
         CT_Pie3D,
         CT_Doughnut,
