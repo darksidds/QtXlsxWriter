@@ -124,9 +124,12 @@ public:
     bool saveAs(const QString &xlsXname) const;
     bool saveAs(QIODevice *device) const;
 
+    bool isLoaded() const;
+
 private:
     Q_DISABLE_COPY(Document)
     DocumentPrivate * const d_ptr;
+    bool loaded;
 };
 
 QT_END_NAMESPACE_XLSX

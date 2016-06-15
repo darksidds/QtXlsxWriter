@@ -381,6 +381,7 @@ Document::Document(QObject *parent) :
     QObject(parent), d_ptr(new DocumentPrivate(this))
 {
     d_ptr->init();
+    loaded = 0;
 }
 
 /*!
@@ -391,11 +392,12 @@ Document::Document(QObject *parent) :
 Document::Document(const QString &name, QObject *parent) :
     QObject(parent), d_ptr(new DocumentPrivate(this))
 {
+    loaded = 0;
     d_ptr->packageName = name;
     if (QFile::exists(name)) {
         QFile xlsx(name);
         if (xlsx.open(QFile::ReadOnly))
-            d_ptr->loadPackage(&xlsx);
+            loaded = d_ptr->loadPackage(&xlsx);
     }
     d_ptr->init();
 }
@@ -408,8 +410,9 @@ Document::Document(const QString &name, QObject *parent) :
 Document::Document(QIODevice *device, QObject *parent) :
     QObject(parent), d_ptr(new DocumentPrivate(this))
 {
+    loaded = 0;
     if (device && device->isReadable())
-        d_ptr->loadPackage(device);
+        loaded = d_ptr->loadPackage(device);
     d_ptr->init();
 }
 
@@ -1055,6 +1058,14 @@ bool Document::saveAs(QIODevice *device) const
 {
     Q_D(const Document);
     return d->savePackage(device);
+}
+
+/*!
+* Returns true if document was loaded successfully.
+*/
+bool Document::isLoaded() const
+{
+    return loaded;
 }
 
 /*!
