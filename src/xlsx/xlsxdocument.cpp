@@ -88,6 +88,7 @@ DocumentPrivate::DocumentPrivate(Document *p) :
     q_ptr(p), defaultPackageName(QStringLiteral("Book1.xlsx")),
 		workbook(nullptr), contentTypes(nullptr)
 {
+  loaded = false;
 }
 
 void DocumentPrivate::init()
@@ -104,6 +105,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
     Q_Q(Document);
     ZipReader zipReader(device);
     QStringList filePaths = zipReader.filePaths();
+    loaded = false;
 
     //Load the Content_Types file
     if (!filePaths.contains(QLatin1String("[Content_Types].xml")))
@@ -240,6 +242,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
         mf->set(zipReader.fileData(path), suffix);
     }
 
+    loaded = true;
     return true;
 }
 
@@ -1065,7 +1068,8 @@ bool Document::saveAs(QIODevice *device) const
 */
 bool Document::isLoaded() const
 {
-    return loaded;
+    Q_D(const Document);
+    return d->loaded;
 }
 
 /*!

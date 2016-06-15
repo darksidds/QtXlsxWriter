@@ -62,6 +62,7 @@ public:
     QMap<QString, QString> documentProperties; //core, app and custom properties
     Workbook* workbook;
     ContentTypes* contentTypes;
+    bool loaded;
 };
 
 }

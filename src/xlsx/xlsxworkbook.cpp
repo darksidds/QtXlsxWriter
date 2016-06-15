@@ -193,8 +193,8 @@ bool Workbook::definedName(const QString &name, QString &formula, QString &comme
     int id = -1;
     if (!scope.isEmpty()) {
         for (int i = 0; i < d->sheets.size(); ++i) {
-            if (d->sheets[i]->sheetName() == scope) {
-                id = d->sheets[i]->sheetId();
+          if (d->sheets[i]->sheetName().compare(scope, Qt::CaseInsensitive) == 0) {
+                id = d->sheets.at(i)->sheetId();
                 break;
             }
         }
@@ -228,12 +228,12 @@ bool Workbook::definedName(int index, QString &name, QString &formula, QString &
     for (int i = 0; i < d->definedNamesList.size(); ++i) {
         if (d->definedNamesList[i].sheetId == id) {
             ++pos;
-        }
-        if (d->definedNamesList[i].sheetId == id && pos == index) {
-            name = d->definedNamesList[i].name;
-            formula = d->definedNamesList[i].formula;
-            comment = d->definedNamesList[i].comment;
-            return true;
+            if (pos == index) {
+              name = d->definedNamesList[i].name;
+              formula = d->definedNamesList[i].formula;
+              comment = d->definedNamesList[i].comment;
+              return true;
+            }
         }
     }
     return false;
