@@ -263,6 +263,16 @@ public:
     void setFillIndex(int index);
     void setXfIndex(int index);
     void setDxfIndex(int index);
+    
+    static Format custom(bool border = false, bool bold = false, bool italic = false);
+    static Format custom(const QString& num, bool border = false, bool bold = false, bool italic = false);
+    static Format custom(const QColor& back, bool border = false, bool bold = false, bool italic = false);
+    static Format custom(const QColor& back, const QString& num, bool border = false, bool bold = false, bool italic = false);
+    static Format custom(HorizontalAlignment align, bool border = false, bool bold = false, bool italic = false);
+    static Format custom(HorizontalAlignment align, const QString& num, bool border = false, bool bold = false, bool italic = false);
+    static Format custom(HorizontalAlignment align, const QColor& back, bool border = false, bool bold = false, bool italic = false);
+    static Format custom(HorizontalAlignment align, const QColor& back, const QString& num, bool border = false, bool bold = false, bool italic = false);
+
 private:
     friend class Styles;
     friend class ::FormatTest;
