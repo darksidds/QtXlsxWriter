@@ -1589,6 +1589,19 @@ Format Format::custom(HorizontalAlignment align, const QColor& back, const QStri
     return format;
 }
 
+/*!
+ * \brief Format::customWrap
+ * \param format
+ * \param wrap
+ * \return
+ */
+Format Format::customWrap(const Format &format, bool wrap)
+{
+    Format result(format);
+    result.setTextWarp(wrap);
+    return result;
+}
+
 #ifndef QT_NO_DEBUG_STREAM
 QDebug operator<<(QDebug dbg, const Format &f)
 {
