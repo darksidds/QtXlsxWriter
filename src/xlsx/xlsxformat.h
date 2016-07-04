@@ -273,6 +273,8 @@ public:
     static Format custom(HorizontalAlignment align, const QColor& back, bool border = false, bool bold = false, bool italic = false);
     static Format custom(HorizontalAlignment align, const QColor& back, const QString& num, bool border = false, bool bold = false, bool italic = false);
 
+    static Format customWrap(const Format &format, bool wrap);
+
 private:
     friend class Styles;
     friend class ::FormatTest;
