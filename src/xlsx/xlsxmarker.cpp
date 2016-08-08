@@ -35,24 +35,20 @@ QT_BEGIN_NAMESPACE_XLSX
 MarkerPrivate::MarkerPrivate(Marker *p) :
     q_ptr(p), enable(false)
 {
-
 }
 
 MarkerPrivate::MarkerPrivate(Marker *p, const QColor& color) :
     q_ptr(p), xcolor(color), enable(true)
 {
-
 }
 
 MarkerPrivate::MarkerPrivate(const MarkerPrivate * const mp) :
     xcolor(mp->xcolor), enable(mp->enable)
 {
-
 }
 
 MarkerPrivate::~MarkerPrivate()
 {
-    
 }
 
 /*!
@@ -84,13 +80,11 @@ MarkerPrivate::~MarkerPrivate()
 Marker::Marker(const QColor& color, MarkerType type, unsigned size)
     : d_ptr(new MarkerPrivate(this, color)), symbol(type), size(size)
 {
-
 }
 
 Marker::Marker(MarkerType type, unsigned size)
     : d_ptr(new MarkerPrivate(this)), symbol(type), size(size)
 {
-    
 }
 
 /*!
@@ -99,34 +93,33 @@ Marker::Marker(MarkerType type, unsigned size)
 
 Marker::~Marker()
 {
-    
 }
 
 QString Marker::getType() {
     switch (symbol) {
-        case MT_Auto:
+        case MT_Auto :
             return QLatin1String("auto");
-        case MT_Circle:
+        case MT_Circle :
             return QLatin1String("circle");
-        case MT_Dash:
+        case MT_Dash :
             return QLatin1String("dash");
-        case MT_Diamond:
+        case MT_Diamond :
             return QLatin1String("diamond");
-        case MT_Dot:
+        case MT_Dot :
             return QLatin1String("dot");
-        case MT_None:
+        case MT_None :
             return QLatin1String("none");
-        case MT_Plus:
+        case MT_Plus :
             return QLatin1String("plus");
-        case MT_Square:
+        case MT_Square :
             return QLatin1String("square");
-        case MT_Star:
+        case MT_Star :
             return QLatin1String("star");
-        case MT_Triangle:
+        case MT_Triangle :
             return QLatin1String("triangle");
-        case MT_X:
+        case MT_X :
             return QLatin1String("x");
-        default:
+        default :
             return QLatin1String("auto");
     }
 }
@@ -139,23 +132,23 @@ void Marker::setColor(const QColor& color) {
 QString hexFromInt(int value)
 {
     switch (value) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9: return QString::number(value);
-    case 10: return QLatin1String("A");
-    case 11: return QLatin1String("B");
-    case 12: return QLatin1String("C");
-    case 13: return QLatin1String("D");
-    case 14: return QLatin1String("E");
-    case 15: return QLatin1String("F");
-    default: return QLatin1String("");
+        case 0 :
+        case 1 :
+        case 2 :
+        case 3 :
+        case 4 :
+        case 5 :
+        case 6 :
+        case 7 :
+        case 8 :
+        case 9 :  return QString::number(value);
+        case 10 : return QLatin1String("A");
+        case 11 : return QLatin1String("B");
+        case 12 : return QLatin1String("C");
+        case 13 : return QLatin1String("D");
+        case 14 : return QLatin1String("E");
+        case 15 : return QLatin1String("F");
+        default : return QLatin1String("");
     }
 }
 
@@ -190,24 +183,20 @@ bool Marker::isCustomColor() const
 ChartLinePrivate::ChartLinePrivate(ChartLine *p) :
     q_ptr(p), enable(false)
 {
-
 }
 
 ChartLinePrivate::ChartLinePrivate(ChartLine *p, const QColor& color) :
     q_ptr(p), xcolor(color), enable(true)
 {
-
 }
 
 ChartLinePrivate::ChartLinePrivate(const ChartLinePrivate * const mp) :
     xcolor(mp->xcolor), enable(mp->enable)
 {
-
 }
 
 ChartLinePrivate::~ChartLinePrivate()
 {
-
 }
 
 /*!
@@ -223,13 +212,11 @@ ChartLinePrivate::~ChartLinePrivate()
 ChartLine::ChartLine(const QColor& color, Marker marker, QString name, bool wide)
     : marker(marker), d_ptr(new ChartLinePrivate(this, color)), seriesName(name), wide(wide)
 {
-
 }
 
 ChartLine::ChartLine(Marker marker, QString name, bool wide)
     : marker(marker), d_ptr(new ChartLinePrivate(this)), seriesName(name), wide(wide)
 {
-
 }
 
 /*!
@@ -238,7 +225,6 @@ ChartLine::ChartLine(Marker marker, QString name, bool wide)
 
 ChartLine::~ChartLine()
 {
-
 }
 
 void ChartLine::setName(const QString name)

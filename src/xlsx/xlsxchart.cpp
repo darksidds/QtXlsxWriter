@@ -38,12 +38,10 @@ QT_BEGIN_NAMESPACE_XLSX
 ChartPrivate::ChartPrivate(Chart *q, Chart::CreateFlag flag)
     :AbstractOOXmlFilePrivate(q, flag), chartType(static_cast<Chart::ChartType>(0))
 {
-
 }
 
 ChartPrivate::~ChartPrivate()
 {
-
 }
 
 /*!
@@ -172,28 +170,28 @@ void Chart::setChartType(ChartType type)
     Q_D(Chart);
     d->chartType = type;
     d->axisList.clear();
-    switch(type) {
-    case Chart::CT_Bar:
-    case Chart::CT_Bar3D:
-        InsertAxisXY(d->axisList);
-        break;
-    case Chart::CT_Line:
-        InsertAxisXY(d->axisList);
-        break;
-    case Chart::CT_Line3D:
-        InsertAxisXY(d->axisList);
-        InsertAxisZ(d->axisList);
-        break;
-    case Chart::CT_Scatter:
-    case Chart::CT_ScatterLine:
-        InsertAxisXY(d->axisList);
-        break;
-    case Chart::CT_Area:
-    case Chart::CT_Area3D:
-        InsertAxisXY(d->axisList);
-        break;
-    default:
-        break;
+    switch (type) {
+        case Chart::CT_Bar :
+        case Chart::CT_Bar3D :
+            InsertAxisXY(d->axisList);
+            break;
+        case Chart::CT_Line :
+            InsertAxisXY(d->axisList);
+            break;
+        case Chart::CT_Line3D :
+            InsertAxisXY(d->axisList);
+            InsertAxisZ(d->axisList);
+            break;
+        case Chart::CT_Scatter :
+        case Chart::CT_ScatterLine :
+            InsertAxisXY(d->axisList);
+            break;
+        case Chart::CT_Area :
+        case Chart::CT_Area3D :
+            InsertAxisXY(d->axisList);
+            break;
+        default :
+            break;
     }
 }
 
@@ -218,18 +216,18 @@ void Chart::setAxisMaxScope(AxisType type, double value)
     Q_D(Chart);
     int index = -1;
     switch (type) {
-    case AT_X:
-        Q_ASSERT(!d->axisList.isEmpty());
-        index = 0;
-        break;
-    case AT_Y:
-        Q_ASSERT(d->axisList.size() > 1);
-        index = 1;
-        break;
-    case AT_Z:
-        Q_ASSERT(d->axisList.size() == 3);
-        index = 2;
-        break;
+        case AT_X :
+            Q_ASSERT(!d->axisList.isEmpty());
+            index = 0;
+            break;
+        case AT_Y :
+            Q_ASSERT(d->axisList.size() > 1);
+            index = 1;
+            break;
+        case AT_Z :
+            Q_ASSERT(d->axisList.size() == 3);
+            index = 2;
+            break;
     }
     if (index != -1)
         d->axisList[index]->maxValue.setValue(value);
@@ -240,18 +238,18 @@ void Chart::setAxisMinScope(AxisType type, double value)
     Q_D(Chart);
     int index = -1;
     switch (type) {
-    case AT_X:
-        Q_ASSERT(!d->axisList.isEmpty());
-        index = 0;
-        break;
-    case AT_Y:
-        Q_ASSERT(d->axisList.size() > 1);
-        index = 1;
-        break;
-    case AT_Z:
-        Q_ASSERT(d->axisList.size() == 3);
-        index = 2;
-        break;
+        case AT_X :
+            Q_ASSERT(!d->axisList.isEmpty());
+            index = 0;
+            break;
+        case AT_Y :
+            Q_ASSERT(d->axisList.size() > 1);
+            index = 1;
+            break;
+        case AT_Z :
+            Q_ASSERT(d->axisList.size() == 3);
+            index = 2;
+            break;
     }
     if (index != -1)
         d->axisList[index]->minValue.setValue(value);
@@ -262,18 +260,18 @@ void Chart::setAxisMaxAuto(AxisType type)
     Q_D(Chart);
     int index = -1;
     switch (type) {
-    case AT_X:
-        Q_ASSERT(!d->axisList.isEmpty());
-        index = 0;
-        break;
-    case AT_Y:
-        Q_ASSERT(d->axisList.size() > 1);
-        index = 1;
-        break;
-    case AT_Z:
-        Q_ASSERT(d->axisList.size() == 3);
-        index = 2;
-        break;
+        case AT_X :
+            Q_ASSERT(!d->axisList.isEmpty());
+            index = 0;
+            break;
+        case AT_Y :
+            Q_ASSERT(d->axisList.size() > 1);
+            index = 1;
+            break;
+        case AT_Z :
+            Q_ASSERT(d->axisList.size() == 3);
+            index = 2;
+            break;
     }
     if (index != -1)
         d->axisList[index]->maxValue.setAuto();
@@ -284,18 +282,18 @@ void Chart::setAxisMinAuto(AxisType type)
     Q_D(Chart);
     int index = -1;
     switch (type) {
-    case AT_X:
-        Q_ASSERT(!d->axisList.isEmpty());
-        index = 0;
-        break;
-    case AT_Y:
-        Q_ASSERT(d->axisList.size() > 1);
-        index = 1;
-        break;
-    case AT_Z:
-        Q_ASSERT(d->axisList.size() == 3);
-        index = 2;
-        break;
+        case AT_X :
+            Q_ASSERT(!d->axisList.isEmpty());
+            index = 0;
+            break;
+        case AT_Y :
+            Q_ASSERT(d->axisList.size() > 1);
+            index = 1;
+            break;
+        case AT_Z :
+            Q_ASSERT(d->axisList.size() == 3);
+            index = 2;
+            break;
     }
     if (index != -1)
         d->axisList[index]->minValue.setAuto();
@@ -306,18 +304,18 @@ void Chart::enableAxisMajorGridLines(AxisType type, bool activate)
     Q_D(Chart);
     int index = -1;
     switch (type) {
-    case AT_X:
-        Q_ASSERT(!d->axisList.isEmpty());
-        index = 0;
-        break;
-    case AT_Y:
-        Q_ASSERT(d->axisList.size() > 1);
-        index = 1;
-        break;
-    case AT_Z:
-        Q_ASSERT(d->axisList.size() == 3);
-        index = 2;
-        break;
+        case AT_X :
+            Q_ASSERT(!d->axisList.isEmpty());
+            index = 0;
+            break;
+        case AT_Y :
+            Q_ASSERT(d->axisList.size() > 1);
+            index = 1;
+            break;
+        case AT_Z :
+            Q_ASSERT(d->axisList.size() == 3);
+            index = 2;
+            break;
     }
     if (index != -1)
         d->axisList[index]->majorLines = activate;
@@ -328,18 +326,18 @@ void Chart::enableAxisMinorGridLines(AxisType type, bool activate)
     Q_D(Chart);
     int index = -1;
     switch (type) {
-    case AT_X:
-        Q_ASSERT(!d->axisList.isEmpty());
-        index = 0;
-        break;
-    case AT_Y:
-        Q_ASSERT(d->axisList.size() > 1);
-        index = 1;
-        break;
-    case AT_Z:
-        Q_ASSERT(d->axisList.size() == 3);
-        index = 2;
-        break;
+        case AT_X :
+            Q_ASSERT(!d->axisList.isEmpty());
+            index = 0;
+            break;
+        case AT_Y :
+            Q_ASSERT(d->axisList.size() > 1);
+            index = 1;
+            break;
+        case AT_Z :
+            Q_ASSERT(d->axisList.size() == 3);
+            index = 2;
+            break;
     }
     if (index != -1)
         d->axisList[index]->minorLines = activate;
@@ -473,16 +471,16 @@ bool ChartPrivate::loadXmlPlotArea(QXmlStreamReader &reader)
 bool ChartPrivate::loadXmlXxxChart(QXmlStreamReader &reader)
 {
     QStringRef name = reader.name();
-    if (name == QLatin1String("pieChart")) chartType = Chart::CT_Pie;
-    else if (name == QLatin1String("pie3DChart")) chartType = Chart::CT_Pie3D;
-    else if (name == QLatin1String("barChart")) chartType = Chart::CT_Bar;
-    else if (name == QLatin1String("bar3DChart")) chartType = Chart::CT_Bar3D;
-    else if (name == QLatin1String("lineChart")) chartType = Chart::CT_Line;
-    else if (name == QLatin1String("line3DChart")) chartType = Chart::CT_Line3D;
+    if (name == QLatin1String("pieChart"))          chartType = Chart::CT_Pie;
+    else if (name == QLatin1String("pie3DChart"))   chartType = Chart::CT_Pie3D;
+    else if (name == QLatin1String("barChart"))     chartType = Chart::CT_Bar;
+    else if (name == QLatin1String("bar3DChart"))   chartType = Chart::CT_Bar3D;
+    else if (name == QLatin1String("lineChart"))    chartType = Chart::CT_Line;
+    else if (name == QLatin1String("line3DChart"))  chartType = Chart::CT_Line3D;
     else if (name == QLatin1String("scatterChart")) chartType = Chart::CT_Scatter;
-    else if (name == QLatin1String("areaChart")) chartType = Chart::CT_Area;
-    else if (name == QLatin1String("area3DChart")) chartType = Chart::CT_Area3D;
-    else if (name == QLatin1String("doughnutChart")) chartType = Chart::CT_Doughnut;
+    else if (name == QLatin1String("areaChart"))    chartType = Chart::CT_Area;
+    else if (name == QLatin1String("area3DChart"))  chartType = Chart::CT_Area3D;
+    else if (name == QLatin1String("doughnutChart"))chartType = Chart::CT_Doughnut;
     else qDebug()<<"Cann't load chart: "<<name;
 
     while (!reader.atEnd()) {
@@ -598,31 +596,31 @@ void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
     }
     writer.writeStartElement(QStringLiteral("c:plotArea"));
     switch (chartType) {
-    case Chart::CT_Pie:
-    case Chart::CT_Pie3D:
-        saveXmlPieChart(writer);
-        break;
-    case Chart::CT_Bar:
-    case Chart::CT_Bar3D:
-        saveXmlBarChart(writer);
-        break;
-    case Chart::CT_Line:
-    case Chart::CT_Line3D:
-        saveXmlLineChart(writer);
-        break;
-    case Chart::CT_Scatter:
-    case Chart::CT_ScatterLine:
-        saveXmlScatterChart(writer);
-        break;
-    case Chart::CT_Area:
-    case Chart::CT_Area3D:
-        saveXmlAreaChart(writer);
-        break;
-    case Chart::CT_Doughnut:
-        saveXmlDoughnutChart(writer);
-        break;
-    default:
-        break;
+        case Chart::CT_Pie :
+        case Chart::CT_Pie3D :
+            saveXmlPieChart(writer);
+            break;
+        case Chart::CT_Bar :
+        case Chart::CT_Bar3D :
+            saveXmlBarChart(writer);
+            break;
+        case Chart::CT_Line :
+        case Chart::CT_Line3D :
+            saveXmlLineChart(writer);
+            break;
+        case Chart::CT_Scatter :
+        case Chart::CT_ScatterLine :
+            saveXmlScatterChart(writer);
+            break;
+        case Chart::CT_Area :
+        case Chart::CT_Area3D :
+            saveXmlAreaChart(writer);
+            break;
+        case Chart::CT_Doughnut :
+            saveXmlDoughnutChart(writer);
+            break;
+        default :
+            break;
     }
     saveXmlAxes(writer);
     writer.writeEndElement(); //plotArea
@@ -634,7 +632,7 @@ void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
 
 void ChartPrivate::saveXmlPieChart(QXmlStreamWriter &writer) const
 {
-    QString name = chartType==Chart::CT_Pie ? QStringLiteral("c:pieChart") : QStringLiteral("c:pie3DChart");
+    QString name = chartType == Chart::CT_Pie ? QStringLiteral("c:pieChart") : QStringLiteral("c:pie3DChart");
 
     writer.writeStartElement(name);
 
@@ -650,7 +648,7 @@ void ChartPrivate::saveXmlPieChart(QXmlStreamWriter &writer) const
 
 void ChartPrivate::saveXmlBarChart(QXmlStreamWriter &writer) const
 {
-    QString name = chartType==Chart::CT_Bar ? QStringLiteral("c:barChart") : QStringLiteral("c:bar3DChart");
+    QString name = chartType == Chart::CT_Bar ? QStringLiteral("c:barChart") : QStringLiteral("c:bar3DChart");
 
     writer.writeStartElement(name);
 
@@ -678,7 +676,7 @@ void ChartPrivate::saveXmlBarChart(QXmlStreamWriter &writer) const
 
 void ChartPrivate::saveXmlLineChart(QXmlStreamWriter &writer) const
 {
-    QString name = chartType==Chart::CT_Line ? QStringLiteral("c:lineChart") : QStringLiteral("c:line3DChart");
+    QString name = chartType == Chart::CT_Line ? QStringLiteral("c:lineChart") : QStringLiteral("c:line3DChart");
 
     writer.writeStartElement(name);
 
@@ -905,20 +903,20 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
         XlsxAxis *axis = axisList[i].data();
         QString name;
         switch (axis->type) {
-        case XlsxAxis::T_Cat: name = QStringLiteral("c:catAx"); break;
-        case XlsxAxis::T_Val: name = QStringLiteral("c:valAx"); break;
-        case XlsxAxis::T_Ser: name = QStringLiteral("c:serAx"); break;
-        case XlsxAxis::T_Date: name = QStringLiteral("c:dateAx"); break;
-        default: break;
+            case XlsxAxis::T_Cat :  name = QStringLiteral("c:catAx"); break;
+            case XlsxAxis::T_Val :  name = QStringLiteral("c:valAx"); break;
+            case XlsxAxis::T_Ser :  name = QStringLiteral("c:serAx"); break;
+            case XlsxAxis::T_Date : name = QStringLiteral("c:dateAx"); break;
+            default : break;
         }
 
         QString pos;
         switch (axis->axisPos) {
-        case XlsxAxis::Top:    pos = QStringLiteral("t"); break;
-        case XlsxAxis::Bottom: pos = QStringLiteral("b"); break;
-        case XlsxAxis::Left:   pos = QStringLiteral("l"); break;
-        case XlsxAxis::Right:  pos = QStringLiteral("r"); break;
-        default: break;
+            case XlsxAxis::Top :    pos = QStringLiteral("t"); break;
+            case XlsxAxis::Bottom : pos = QStringLiteral("b"); break;
+            case XlsxAxis::Left :   pos = QStringLiteral("l"); break;
+            case XlsxAxis::Right :  pos = QStringLiteral("r"); break;
+            default : break;
         }
 
         writer.writeStartElement(name);
@@ -983,11 +981,11 @@ void ChartPrivate::saveXmlLegend(QXmlStreamWriter &writer) const
         writer.writeStartElement(QStringLiteral("c:legendPos"));
         QString pos;
         switch (legend.pos) {
-        case Chart::Top:    pos = QStringLiteral("t"); break;
-        case Chart::Bottom: pos = QStringLiteral("b"); break;
-        case Chart::Left:   pos = QStringLiteral("l"); break;
-        case Chart::Right:  pos = QStringLiteral("r"); break;
-        default: break;
+            case Chart::Top :    pos = QStringLiteral("t"); break;
+            case Chart::Bottom : pos = QStringLiteral("b"); break;
+            case Chart::Left :   pos = QStringLiteral("l"); break;
+            case Chart::Right :  pos = QStringLiteral("r"); break;
+            default : break;
         }
         writer.writeAttribute(QStringLiteral("val"), pos);
         writer.writeEndElement();//c:legendPos
