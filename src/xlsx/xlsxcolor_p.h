@@ -53,7 +53,7 @@ class Q_XLSX_EXPORT XlsxColor
 public:
     explicit XlsxColor(const QColor &color = QColor());
     explicit XlsxColor(const QString &theme, const QString &tint=QString());
-    explicit XlsxColor (int index);
+    explicit XlsxColor(int index);
 
     bool isThemeColor() const;
     bool isIndexedColor() const;
