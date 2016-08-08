@@ -125,17 +125,17 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, ChartLine li
     } else if (range.columnCount() < range.rowCount()) {
         //Column based series
         int firstDataColumn = range.firstColumn();
-        QString axDataSouruce_numRef;
+        QString axDataSource_numRef;
         if (d->chartType == CT_Scatter || d->chartType == CT_ScatterLine || d->chartType == CT_Bubble) {
             firstDataColumn += 1;
             CellRange subRange(range.firstRow(), range.firstColumn(), range.lastRow(), range.firstColumn());
-            axDataSouruce_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            axDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
         }
 
         for (int col = firstDataColumn; col <= range.lastColumn(); ++col) {
             CellRange subRange(range.firstRow(), col, range.lastRow(), col);
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
-            series->axDataSource_numRef = axDataSouruce_numRef;
+            series->axDataSource_numRef = axDataSource_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
             series->line = line;
             d->seriesList.append(series);
@@ -144,17 +144,76 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, ChartLine li
     } else {
         //Row based series
         int firstDataRow = range.firstRow();
-        QString axDataSouruce_numRef;
-        if (d->chartType == CT_Scatter || d->chartType == CT_ScatterLine ||d->chartType == CT_Bubble) {
+        QString axDataSource_numRef;
+        if (d->chartType == CT_Scatter || d->chartType == CT_ScatterLine || d->chartType == CT_Bubble) {
             firstDataRow += 1;
             CellRange subRange(range.firstRow(), range.firstColumn(), range.firstRow(), range.lastColumn());
-            axDataSouruce_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            axDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
         }
 
         for (int row = firstDataRow; row <= range.lastRow(); ++row) {
             CellRange subRange(row, range.firstColumn(), row, range.lastColumn());
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
-            series->axDataSource_numRef = axDataSouruce_numRef;
+            series->axDataSource_numRef = axDataSource_numRef;
+            series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            series->line = line;
+            d->seriesList.append(series);
+        }
+    }
+}
+
+void Chart::addSeries(const CellRange &signature, const CellRange &values,
+                      AbstractSheet *sheet, ChartLine line)
+{
+    Q_D(Chart);
+    if (!values.isValid() || !signature.isValid())
+        return;
+    if (signature.columnCount() != 1 && signature.rowCount() != 1)
+        return;
+    if (sheet && sheet->sheetType() != AbstractSheet::ST_WorkSheet)
+        return;
+    if (!sheet && d->sheet->sheetType() != AbstractSheet::ST_WorkSheet)
+        return;
+
+    QString sheetName = sheet ? sheet->sheetName() : d->sheet->sheetName();
+    //In case sheetName contains space or '
+    sheetName = escapeSheetName(sheetName);
+
+    CellRange subRange(signature.firstRow(), signature.firstColumn(), signature.lastRow(), signature.firstColumn());
+    QString axDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+
+    if (signature.columnCount() == 1) {
+        if (signature.rowCount() == 1) {
+            if (values.rowCount() == 1 || values.rowCount() == 1) {
+                QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
+                series->axDataSource_numRef = axDataSource_numRef;
+                series->numberDataSource_numRef = sheetName + QLatin1String("!") + values.toString(true, true);
+                series->line = line;
+                d->seriesList.append(series);
+            } else {
+                return;
+            }
+        } else {
+            if (values.rowCount() != signature.rowCount()) {
+                return;
+            }
+            for (int col = values.firstColumn(); col <= values.lastColumn(); ++col) {
+                CellRange subRange(values.firstRow(), col, values.lastRow(), col);
+                QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
+                series->axDataSource_numRef = axDataSource_numRef;
+                series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+                series->line = line;
+                d->seriesList.append(series);
+            }
+        }
+    } else {
+        if (values.columnCount() != signature.columnCount()) {
+            return;
+        }
+        for (int row = values.firstRow(); row <= values.lastRow(); ++row) {
+            CellRange subRange(row, values.firstColumn(), row, values.lastColumn());
+            QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
+            series->axDataSource_numRef = axDataSource_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
             series->line = line;
             d->seriesList.append(series);

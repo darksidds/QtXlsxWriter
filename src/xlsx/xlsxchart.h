@@ -73,8 +73,7 @@ public:
         AT_Z
     };
 
-    enum Pos
-    {
+    enum Pos {
         Left,
         Right,
         Top,
@@ -84,6 +83,8 @@ public:
     ~Chart();
 
     void addSeries(const CellRange &range, AbstractSheet *sheet = 0, ChartLine line = ChartLine());
+    void addSeries(const CellRange &signature, const CellRange &values,
+                   AbstractSheet *sheet = 0, ChartLine line = ChartLine());
     void setChartType(ChartType type);
     void setChartStyle(int id);
     void setChartTytle(const QString & title);
