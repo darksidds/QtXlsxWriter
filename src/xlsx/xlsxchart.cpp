@@ -619,6 +619,107 @@ QString ChartPrivate::loadXmlNumRef(QXmlStreamReader &reader)
     return QString();
 }
 
+bool ChartPrivate::loadXmlAxis(QXmlStreamReader &reader)
+{
+    Q_ASSERT(reader.name().endsWith(QLatin1String("Ax")));
+    QString name = reader.name().toString();
+
+    XlsxAxis *axis = new XlsxAxis;
+    if (name == QLatin1String("valAx"))
+        axis->type = XlsxAxis::T_Val;
+    else if (name == QLatin1String("catAx"))
+        axis->type = XlsxAxis::T_Cat;
+    else if (name == QLatin1String("serAx"))
+        axis->type = XlsxAxis::T_Ser;
+    else
+        axis->type = XlsxAxis::T_Date;
+
+    axisList.append(QSharedPointer<XlsxAxis>(axis));
+
+    while (!reader.atEnd()) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement) {
+            if (reader.name() == QLatin1String("axPos")) {
+                QXmlStreamAttributes attrs = reader.attributes();
+                QStringRef pos = attrs.value(QLatin1String("val"));
+                if (pos == QLatin1String("l"))
+                    axis->axisPos = XlsxAxis::Left;
+                else if (pos == QLatin1String("r"))
+                    axis->axisPos = XlsxAxis::Right;
+                else if (pos == QLatin1String("b"))
+                    axis->axisPos = XlsxAxis::Bottom;
+                else
+                    axis->axisPos = XlsxAxis::Top;
+            } else if (reader.name() == QLatin1String("axId")) {
+                axis->axisId = reader.attributes().value(QLatin1String("val")).toString().toInt();
+            } else if (reader.name() == QLatin1String("crossAx")) {
+                axis->crossAx = reader.attributes().value(QLatin1String("val")).toString().toInt();
+            }
+        } else if (reader.tokenType() == QXmlStreamReader::EndElement
+                   && reader.name() == name) {
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool ChartPrivate::loadXmlAxId(QXmlStreamReader &reader)
+{
+    Q_ASSERT(reader.name() == QLatin1String("axId"));
+    QString name = reader.name().toString();
+    while (!reader.atEnd()) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement) {
+            // !Todo
+        } else if (reader.tokenType() == QXmlStreamReader::EndElement && reader.name() == name) {
+            break;
+        }
+    }
+    return true;
+}
+
+bool ChartPrivate::loadXmlLayout(QXmlStreamReader &reader)
+{
+    Q_ASSERT(reader.name() == QLatin1String("layout"));
+    QString name = reader.name().toString();
+    while (!reader.atEnd()) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement) {
+            // !Todo
+        } else if (reader.tokenType() == QXmlStreamReader::EndElement && reader.name() == name) {
+            break;
+        }
+    }
+    return true;
+}
+
+bool ChartPrivate::loadXmlLegend(QXmlStreamReader &reader)
+{
+    Q_ASSERT(reader.name() == QLatin1String("legend"));
+    QString name = reader.name().toString();
+    while (!reader.atEnd()) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement) {
+            if (reader.name() == QLatin1String("legendPos")) {
+                QXmlStreamAttributes attrs = reader.attributes();
+                QStringRef pos = attrs.value(QLatin1String("val"));
+                if (pos == QLatin1String("l"))
+                    legend.pos = Chart::Left;
+                else if (pos == QLatin1String("r"))
+                    legend.pos = Chart::Right;
+                else if (pos == QLatin1String("b"))
+                    legend.pos = Chart::Bottom;
+                else
+                    legend.pos = Chart::Top;
+            }
+        } else if (reader.tokenType() == QXmlStreamReader::EndElement && reader.name() == name) {
+            break;
+        }
+    }
+    return true;
+}
+
 void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
 {
     writer.writeStartElement(QStringLiteral("c:chart"));
@@ -753,8 +854,9 @@ void ChartPrivate::saveXmlLineChart(QXmlStreamWriter &writer) const
 
     if (axisList.isEmpty()) {
         InsertAxisXY(const_cast<ChartPrivate*>(this)->axisList);
-        if (chartType == Chart::CT_Line3D)
+        if (chartType == Chart::CT_Line3D) {
             InsertAxisZ(const_cast<ChartPrivate*>(this)->axisList);
+        }
     }
 
     Q_ASSERT((axisList.size() == 2 || chartType == Chart::CT_Line)
@@ -916,72 +1018,6 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
     }
 
     writer.writeEndElement();//c:ser
-}
-
-bool ChartPrivate::loadXmlAxis(QXmlStreamReader &reader)
-{
-    Q_ASSERT(reader.name().endsWith(QLatin1String("Ax")));
-    QString name = reader.name().toString();
-
-    XlsxAxis *axis = new XlsxAxis;
-    if (name == QLatin1String("valAx"))
-        axis->type = XlsxAxis::T_Val;
-    else if (name == QLatin1String("catAx"))
-        axis->type = XlsxAxis::T_Cat;
-    else if (name == QLatin1String("serAx"))
-        axis->type = XlsxAxis::T_Ser;
-    else
-        axis->type = XlsxAxis::T_Date;
-
-    axisList.append(QSharedPointer<XlsxAxis>(axis));
-
-    while (!reader.atEnd()) {
-        reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == QLatin1String("axPos")) {
-                QXmlStreamAttributes attrs = reader.attributes();
-                QStringRef pos = attrs.value(QLatin1String("val"));
-                if (pos==QLatin1String("l"))
-                    axis->axisPos = XlsxAxis::Left;
-                else if (pos==QLatin1String("r"))
-                    axis->axisPos = XlsxAxis::Right;
-                else if (pos==QLatin1String("b"))
-                    axis->axisPos = XlsxAxis::Bottom;
-                else
-                    axis->axisPos = XlsxAxis::Top;
-            } else if (reader.name() == QLatin1String("axId")) {
-                axis->axisId = reader.attributes().value(QLatin1String("val")).toString().toInt();
-            } else if (reader.name() == QLatin1String("crossAx")) {
-                axis->crossAx = reader.attributes().value(QLatin1String("val")).toString().toInt();
-            }
-        } else if (reader.tokenType() == QXmlStreamReader::EndElement
-                   && reader.name() == name) {
-            break;
-        }
-    }
-
-    return true;
-}
-
-bool ChartPrivate::loadXmlAxId(QXmlStreamReader &reader)
-{
-    Q_ASSERT(reader.name() == QLatin1String("axId"));
-    // !Todo
-    return true;
-}
-
-bool ChartPrivate::loadXmlLayout(QXmlStreamReader &reader)
-{
-    Q_ASSERT(reader.name() == QLatin1String("layout"));
-    // !Todo
-    return true;
-}
-
-bool ChartPrivate::loadXmlLegend(QXmlStreamReader &reader)
-{
-    Q_ASSERT(reader.name().endsWith(QLatin1String("legend")));
-    // !Todo
-    return true;
 }
 
 void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
