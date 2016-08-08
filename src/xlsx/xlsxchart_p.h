@@ -156,6 +156,9 @@ public:
     bool loadXmlSer(QXmlStreamReader &reader);
     QString loadXmlNumRef(QXmlStreamReader &reader);
     bool loadXmlAxis(QXmlStreamReader &reader);
+    bool loadXmlAxId(QXmlStreamReader &reader);
+    bool loadXmlLayout(QXmlStreamReader &reader);
+    bool loadXmlLegend(QXmlStreamReader &reader);
 
     void saveXmlChart(QXmlStreamWriter &writer) const;
     void saveXmlPieChart(QXmlStreamWriter &writer) const;
