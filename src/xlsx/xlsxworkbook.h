@@ -64,6 +64,7 @@ public:
     bool deleteSheet(int index);
     bool copySheet(int index, const QString &newName=QString());
     bool moveSheet(int srcIndex, int distIndex);
+    bool addSheet(AbstractSheet * sheet, const QString &newName=QString());
 
     AbstractSheet *activeSheet() const;
     bool setActiveSheet(int index);
