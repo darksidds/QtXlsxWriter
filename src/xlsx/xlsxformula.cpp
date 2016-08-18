@@ -32,6 +32,21 @@ Formula::~Formula()
 {
 }
 
+QString Formula::COUNTIF(const CellRange& range, const QString& condition)
+{
+    return QString("COUNTIF(" + range.toString() + ", " + condition + ")");
+}
+
+QString Formula::COUNTIF(const CellRange& range, const CellReference& cell)
+{
+    return QString("COUNTIF(" + range.toString() + ", " + cell.toString() + ")");
+}
+
+QString Formula::PRODUCT(const CellRange & range)
+{
+    return QString("PRODUCT(" + range.toString() + ")");
+}
+
 QString Formula::SUM(const CellRange & range)
 {
     return QString("SUM(" + range.toString() + ")");

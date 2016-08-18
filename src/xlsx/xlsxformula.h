@@ -41,7 +41,10 @@ class Q_XLSX_EXPORT Formula
 public:
     ~Formula();
 
-    static QString SUM(const CellRange & range);
+    static QString COUNTIF(const CellRange& range, const QString& condition);
+    static QString COUNTIF(const CellRange& range, const CellReference& cell);
+    static QString PRODUCT(const CellRange& range);
+    static QString SUM(const CellRange& range);
 
 private:
     Formula();
