@@ -969,6 +969,16 @@ bool Document::deleteSheet(const QString &name)
 }
 
 /*!
+   Add the worksheet \a newName from AbstractSheet \a sheet.
+   Returns true if new sheet was added successfully.
+ */
+bool Document::addSheet(AbstractSheet * sheet, const QString &newName)
+{
+    Q_D(Document);
+    return d->workbook->addSheet(sheet, newName);
+}
+
+/*!
  * \brief Return pointer of current sheet.
  */
 AbstractSheet *Document::currentSheet() const
