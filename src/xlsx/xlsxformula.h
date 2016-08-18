@@ -28,14 +28,23 @@
 
 #include "xlsxglobal.h"
 
+#include "xlsxcellrange.h"
+#include "xlsxcellreference.h"
+
 QT_BEGIN_NAMESPACE_XLSX
 
-class Formula
+class CellRange;
+class CellReference;
+
+class Q_XLSX_EXPORT Formula
 {
 public:
-    Formula() { }
+    ~Formula();
+
+    static QString SUM(const CellRange & range);
 
 private:
+    Formula();
 };
 
 QT_END_NAMESPACE_XLSX

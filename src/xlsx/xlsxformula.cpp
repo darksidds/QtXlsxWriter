@@ -24,3 +24,21 @@
 ****************************************************************************/
 
 #include "xlsxformula.h"
+#include <QDebug>
+
+QT_BEGIN_NAMESPACE_XLSX
+
+Formula::~Formula()
+{
+}
+
+QString Formula::SUM(const CellRange & range)
+{
+    return QString("SUM(" + range.toString() + ")");
+}
+
+Formula::Formula()
+{
+}
+
+QT_END_NAMESPACE_XLSX

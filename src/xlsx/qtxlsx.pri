@@ -86,4 +86,3 @@ SOURCES += $$PWD/xlsxdocpropscore.cpp \
     $$PWD/xlsxsimpleooxmlfile.cpp \
     $$PWD/xlsxcellformula.cpp \
     $$PWD/xlsxformula.cpp
-
