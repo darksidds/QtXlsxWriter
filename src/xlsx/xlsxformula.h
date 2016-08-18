@@ -26,6 +26,8 @@
 #ifndef QXLSX_FORMULA_H
 #define QXLSX_FORMULA_H
 
+#include "xlsxglobal.h"
+
 QT_BEGIN_NAMESPACE_XLSX
 
 class Formula

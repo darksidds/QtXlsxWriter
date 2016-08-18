@@ -25,6 +25,7 @@
 #ifndef QXLSX_XLSXCELLFORMULA_H
 #define QXLSX_XLSXCELLFORMULA_H
 
+#include "xlsxformula.h"
 #include "xlsxglobal.h"
 #include <QExplicitlySharedDataPointer>
 
