@@ -325,29 +325,8 @@ bool Workbook::deleteSheet(int index)
 }
 
 /*!
- * Moves the worksheet form \a srcIndex to \a distIndex.
+ * Copy the worksheet form \a index to \a newName.
  */
-bool Workbook::moveSheet(int srcIndex, int distIndex)
-{
-    Q_D(Workbook);
-    if (srcIndex == distIndex)
-        return false;
-
-    if (srcIndex < 0 || srcIndex >= d->sheets.size())
-        return false;
-
-    QSharedPointer<AbstractSheet> sheet = d->sheets.takeAt(srcIndex);
-    d->sheetNames.takeAt(srcIndex);
-    if (distIndex >= 0 || distIndex <= d->sheets.size()) {
-        d->sheets.insert(distIndex, sheet);
-        d->sheetNames.insert(distIndex, sheet->sheetName());
-    } else {
-        d->sheets.append(sheet);
-        d->sheetNames.append(sheet->sheetName());
-    }
-    return true;
-}
-
 bool Workbook::copySheet(int index, const QString &newName)
 {
     Q_D(Workbook);
@@ -372,7 +351,54 @@ bool Workbook::copySheet(int index, const QString &newName)
     d->sheets.append(QSharedPointer<AbstractSheet> (sheet));
     d->sheetNames.append(sheet->sheetName());
 
-    return false;
+    return true;
+}
+
+/*!
+ * Moves the worksheet form \a srcIndex to \a distIndex.
+ */
+bool Workbook::moveSheet(int srcIndex, int distIndex)
+{
+    Q_D(Workbook);
+    if (srcIndex == distIndex)
+        return false;
+
+    if (srcIndex < 0 || srcIndex >= d->sheets.size())
+        return false;
+
+    QSharedPointer<AbstractSheet> sheet = d->sheets.takeAt(srcIndex);
+    d->sheetNames.takeAt(srcIndex);
+    if (distIndex >= 0 || distIndex <= d->sheets.size()) {
+        d->sheets.insert(distIndex, sheet);
+        d->sheetNames.insert(distIndex, sheet->sheetName());
+    } else {
+        d->sheets.append(sheet);
+        d->sheetNames.append(sheet->sheetName());
+    }
+    return true;
+}
+
+/*!
+ * Add sheet from another AbstractSheet \a sheet to \a newName.
+ */
+bool Workbook::addSheet(AbstractSheet * sheet, const QString &newName)
+{
+	Q_D(Workbook);
+    if (sheet == 0)
+        return false;
+
+    if (!newName.isEmpty()) {
+        //If user given an already in-used name, we should not continue any more!
+        if (d->sheetNames.contains(newName))
+            return false;
+    }
+
+    //++d->last_sheet_id;
+    Worksheet *copySheet = reinterpret_cast<Worksheet *>(sheet)->copy(newName);
+    d->sheets.append(QSharedPointer<AbstractSheet> (copySheet));
+    d->sheetNames.append(sheet->sheetName());
+
+    return true;
 }
 
 /*!
