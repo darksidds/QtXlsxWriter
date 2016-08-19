@@ -72,68 +72,181 @@ Formula Formula::SUM(const CellRange& range)
     return Formula("SUM(" + range.toString() + ")");
 }
 
+Formula Formula::brace(const Formula& f)
+{
+    Formula formula;
+    formula.append(QLatin1String("("));
+    formula.append(f.toString());
+    formula.append(QLatin1String(")"));
+    return formula;
+}
+
 Formula Formula::operator+ (const Formula& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" + "));
-    formula.append(rhs.toString());
+    if (!rhs.toString().isEmpty()) {
+        formula.append(QLatin1String(" + "));
+        formula.append(rhs.toString());
+    }
     return formula;
 }
 
 Formula Formula::operator- (const Formula& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" - "));
-    formula.append(rhs.toString());
+    if (!rhs.toString().isEmpty()) {
+        formula.append(QLatin1String(" - "));
+        formula.append(rhs.toString());
+    }
     return formula;
 }
 
 Formula Formula::operator* (const Formula& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" * "));
-    formula.append(rhs.toString());
+    if (!rhs.toString().isEmpty()) {
+        formula.append(QLatin1String(" * "));
+        formula.append(rhs.toString());
+    }
     return formula;
 }
 
 Formula Formula::operator/ (const Formula& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" / "));
-    formula.append(rhs.toString());
+    if (!rhs.toString().isEmpty()) {
+        formula.append(QLatin1String(" / "));
+        formula.append(rhs.toString());
+    }
     return formula;
 }
 
 Formula Formula::operator+ (const QString& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" + "));
-    formula.append(rhs);
+    if (!rhs.isEmpty()) {
+        formula.append(QLatin1String(" + "));
+        formula.append(rhs);
+    }
     return formula;
 }
 
 Formula Formula::operator- (const QString& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" - "));
-    formula.append(rhs);
+    if (!rhs.isEmpty()) {
+        formula.append(QLatin1String(" - "));
+        formula.append(rhs);
+    }
     return formula;
 }
 
 Formula Formula::operator* (const QString& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" * "));
-    formula.append(rhs);
+    if (!rhs.isEmpty()) {
+        formula.append(QLatin1String(" * "));
+        formula.append(rhs);
+    }
     return formula;
 }
 
 Formula Formula::operator/ (const QString& rhs) const
 {
     Formula formula(*this);
-    formula.append(QLatin1String(" / "));
-    formula.append(rhs);
+    if (!rhs.isEmpty()) {
+        formula.append(QLatin1String(" / "));
+        formula.append(rhs);
+    }
     return formula;
+}
+
+Formula& Formula::operator+=(const Formula& rhs)
+{
+    if (this != &rhs) {
+        *this = *this + rhs;
+    } else {
+        if (!rhs.toString().isEmpty()) {
+            QString temp = this->toString(); 
+            this->append(QLatin1String(" + "));
+            this->append(temp);
+        }
+    }
+    return *this;
+}
+
+Formula& Formula::operator-=(const Formula& rhs)
+{
+    if (this != &rhs) {
+        *this = *this - rhs;
+    } else {
+        if (!rhs.toString().isEmpty()) {
+            QString temp = this->toString(); 
+            this->append(QLatin1String(" - "));
+            this->append(temp);
+        }
+    }
+    return *this;
+}
+
+Formula& Formula::operator*=(const Formula& rhs)
+{
+    if (this != &rhs) {
+        *this = *this * rhs;
+    } else {
+        if (!rhs.toString().isEmpty()) {
+            QString temp = this->toString(); 
+            this->append(QLatin1String(" * "));
+            this->append(temp);
+        }
+    }
+    return *this;
+}
+
+Formula& Formula::operator/=(const Formula& rhs)
+{
+    if (this != &rhs) {
+        *this = *this / rhs;
+    } else {
+        if (!rhs.toString().isEmpty()) {
+            QString temp = this->toString(); 
+            this->append(QLatin1String(" / "));
+            this->append(temp);
+        }
+    }
+    return *this;
+}
+
+Formula& Formula::operator+=(const QString& rhs)
+{
+    if (!rhs.isEmpty()) {
+        *this = *this + rhs;
+    }
+    return *this;
+}
+
+Formula& Formula::operator-=(const QString& rhs)
+{
+    if (!rhs.isEmpty()) {
+        *this = *this - rhs;
+    }
+    return *this;
+}
+
+Formula& Formula::operator*=(const QString& rhs)
+{
+    if (!rhs.isEmpty()) {
+        *this = *this * rhs;
+    }
+    return *this;
+}
+
+Formula& Formula::operator/=(const QString& rhs)
+{
+    if (!rhs.isEmpty()) {
+        *this = *this / rhs;
+    }
+    return *this;
 }
 
 bool Formula::operator== (const Formula& rhs) const

@@ -52,6 +52,8 @@ public:
     static Formula PRODUCT(const CellRange& range);
     static Formula SUM(const CellRange& range);
 
+    static Formula brace(const Formula& formula);
+
     Formula operator+ (const Formula& rhs) const;
     Formula operator- (const Formula& rhs) const;
     Formula operator* (const Formula& rhs) const;
@@ -60,6 +62,16 @@ public:
     Formula operator- (const QString& rhs) const;
     Formula operator* (const QString& rhs) const;
     Formula operator/ (const QString& rhs) const;
+
+    Formula& operator+=(const Formula& rhs);
+    Formula& operator-=(const Formula& rhs);
+    Formula& operator*=(const Formula& rhs);
+    Formula& operator/=(const Formula& rhs);
+    Formula& operator+=(const QString& rhs);
+    Formula& operator-=(const QString& rhs);
+    Formula& operator*=(const QString& rhs);
+    Formula& operator/=(const QString& rhs);
+
     bool operator== (const Formula& rhs) const;
     bool operator!= (const Formula& rhs) const;
     Formula& operator=(const Formula& rhs);
