@@ -39,15 +39,37 @@ class CellReference;
 class Q_XLSX_EXPORT Formula
 {
 public:
+    Formula();
+    Formula(const Formula & formula);
     ~Formula();
 
-    static QString COUNTIF(const CellRange& range, const QString& condition);
-    static QString COUNTIF(const CellRange& range, const CellReference& cell);
-    static QString PRODUCT(const CellRange& range);
-    static QString SUM(const CellRange& range);
+    QString toString() const;
+
+    void clear();
+
+    static Formula COUNTIF(const CellRange& range, const QString& condition);
+    static Formula COUNTIF(const CellRange& range, const CellReference& cell);
+    static Formula PRODUCT(const CellRange& range);
+    static Formula SUM(const CellRange& range);
+
+    Formula operator+ (const Formula& rhs) const;
+    Formula operator- (const Formula& rhs) const;
+    Formula operator* (const Formula& rhs) const;
+    Formula operator/ (const Formula& rhs) const;
+    Formula operator+ (const QString& rhs) const;
+    Formula operator- (const QString& rhs) const;
+    Formula operator* (const QString& rhs) const;
+    Formula operator/ (const QString& rhs) const;
+    bool operator== (const Formula& rhs) const;
+    bool operator!= (const Formula& rhs) const;
+    Formula& operator=(const Formula& rhs);
 
 private:
-    Formula();
+    Formula(const QString& string);
+
+    void append(const QString& string);
+
+    QString m_formula;
 };
 
 QT_END_NAMESPACE_XLSX

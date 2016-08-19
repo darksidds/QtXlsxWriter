@@ -28,32 +28,140 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
+Formula::Formula()
+    : m_formula()
+{
+}
+
+Formula::Formula(const Formula & formula)
+    : m_formula(formula.toString())
+{
+}
+
 Formula::~Formula()
 {
 }
 
-QString Formula::COUNTIF(const CellRange& range, const QString& condition)
+QString Formula::toString() const
 {
-    return QString("COUNTIF(" + range.toString() + ", " + condition + ")");
+    return m_formula;
 }
 
-QString Formula::COUNTIF(const CellRange& range, const CellReference& cell)
+void Formula::clear()
 {
-    return QString("COUNTIF(" + range.toString() + ", " + cell.toString() + ")");
+    m_formula.clear();
 }
 
-QString Formula::PRODUCT(const CellRange & range)
+Formula Formula::COUNTIF(const CellRange& range, const QString& condition)
 {
-    return QString("PRODUCT(" + range.toString() + ")");
+    return Formula("COUNTIF(" + range.toString() + ", " + condition + ")");
 }
 
-QString Formula::SUM(const CellRange & range)
+Formula Formula::COUNTIF(const CellRange& range, const CellReference& cell)
 {
-    return QString("SUM(" + range.toString() + ")");
+    return Formula("COUNTIF(" + range.toString() + ", " + cell.toString() + ")");
 }
 
-Formula::Formula()
+Formula Formula::PRODUCT(const CellRange& range)
 {
+    return Formula("PRODUCT(" + range.toString() + ")");
+}
+
+Formula Formula::SUM(const CellRange& range)
+{
+    return Formula("SUM(" + range.toString() + ")");
+}
+
+Formula Formula::operator+ (const Formula& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" + "));
+    formula.append(rhs.toString());
+    return formula;
+}
+
+Formula Formula::operator- (const Formula& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" - "));
+    formula.append(rhs.toString());
+    return formula;
+}
+
+Formula Formula::operator* (const Formula& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" * "));
+    formula.append(rhs.toString());
+    return formula;
+}
+
+Formula Formula::operator/ (const Formula& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" / "));
+    formula.append(rhs.toString());
+    return formula;
+}
+
+Formula Formula::operator+ (const QString& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" + "));
+    formula.append(rhs);
+    return formula;
+}
+
+Formula Formula::operator- (const QString& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" - "));
+    formula.append(rhs);
+    return formula;
+}
+
+Formula Formula::operator* (const QString& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" * "));
+    formula.append(rhs);
+    return formula;
+}
+
+Formula Formula::operator/ (const QString& rhs) const
+{
+    Formula formula(*this);
+    formula.append(QLatin1String(" / "));
+    formula.append(rhs);
+    return formula;
+}
+
+bool Formula::operator== (const Formula& rhs) const
+{
+    return (rhs.toString() == this->toString());
+}
+
+bool Formula::operator!= (const Formula& rhs) const
+{
+    return !(*this == rhs);
+}
+
+Formula& Formula::operator=(const Formula& rhs)
+{
+    if (this != &rhs) {
+        this->m_formula = rhs.toString();
+    }
+    return *this;
+}
+
+Formula::Formula(const QString& string)
+    : m_formula(string)
+{
+}
+
+void Formula::append(const QString& string)
+{
+    m_formula += string;
 }
 
 QT_END_NAMESPACE_XLSX

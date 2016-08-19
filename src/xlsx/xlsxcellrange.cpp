@@ -60,8 +60,8 @@ CellRange::CellRange(int top, int left, int bottom, int right)
 }
 
 CellRange::CellRange(const CellReference &topLeft, const CellReference &bottomRight)
-    : top(topLeft.row()), left(topLeft.column())
-    , bottom(bottomRight.row()), right(bottomRight.column())
+    : top(topLeft.row()), left(topLeft.column()), 
+      bottom(bottomRight.row()), right(bottomRight.column())
 {
 }
 
