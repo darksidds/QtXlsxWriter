@@ -26,6 +26,8 @@
 #ifndef QXLSX_FORMULA_H
 #define QXLSX_FORMULA_H
 
+#include <QString>
+
 #include "xlsxglobal.h"
 
 #include "xlsxcellrange.h"
