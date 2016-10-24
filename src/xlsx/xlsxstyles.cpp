@@ -251,7 +251,7 @@ void Styles::addXfFormat(const Format &format, bool force)
             const_cast<Format *>(&format)->setXfIndex(m_xf_formatsHash[format.formatKey()].xfIndex());
         else
             const_cast<Format *>(&format)->setXfIndex(m_xf_formatsList.size());
-    }
+        }
     if (!m_xf_formatsHash.contains(format.formatKey()) || force) {
         m_xf_formatsList.append(format);
         m_xf_formatsHash[format.formatKey()] = format;
@@ -1065,12 +1065,17 @@ bool Styles::readCellXfs(QXmlStreamReader &reader)
 
                 if (xfAttrs.hasAttribute(QLatin1String("numFmtId"))) {
                     int numFmtIndex = xfAttrs.value(QLatin1String("numFmtId")).toString().toInt();
-                    bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyNumberFormat")).toString());
-                    if(apply) {
-                        if (!m_customNumFmtIdMap.contains(numFmtIndex))
+                    bool apply = true;
+                    if (xfAttrs.hasAttribute(QLatin1String("applyNumberFormat"))) {
+                        apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyNumberFormat")).toString());
+                    }
+                    if (apply) {
+                        if (!m_customNumFmtIdMap.contains(numFmtIndex)) {
                             format.setNumberFormatIndex(numFmtIndex);
-                        else
+
+                        } else {
                             format.setNumberFormat(numFmtIndex, m_customNumFmtIdMap[numFmtIndex]->formatString);
+                        }
                     }
                 }
 
