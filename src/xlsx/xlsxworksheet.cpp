@@ -1411,6 +1411,11 @@ void WorksheetPrivate::saveXmlCellData(QXmlStreamWriter &writer, int row, int co
         writer.writeAttribute(QStringLiteral("t"), QStringLiteral("b"));
         writer.writeTextElement(QStringLiteral("v"), cell->value().toBool() ? QStringLiteral("1") : QStringLiteral("0"));
     }
+    else if (cell->cellType() == Cell::ErrorType) {
+      writer.writeAttribute(QStringLiteral("t"), QStringLiteral("e"));
+      if (cell->hasFormula())
+        cell->formula().saveToXml(writer);
+    }
     writer.writeEndElement(); //c
 }
 
