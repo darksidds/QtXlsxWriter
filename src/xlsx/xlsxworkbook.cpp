@@ -619,8 +619,9 @@ bool Workbook::loadFromXmlFile(QIODevice *device)
                  sheet->setFilePath(fullPath);
              } else if (reader.name() == QLatin1String("workbookPr")) {
                 QXmlStreamAttributes attrs = reader.attributes();
-                if (attrs.hasAttribute(QLatin1String("date1904")))
-                    d->date1904 = true;
+                if (attrs.hasAttribute(QLatin1String("date1904"))) {
+                    d->date1904 = QXlsx::parseXsdBoolean(attrs.value(QLatin1String("date1904")).toString(), false);
+                }
              } else if (reader.name() == QLatin1String("bookviews")) {
                 while (!(reader.name() == QLatin1String("bookviews") && reader.tokenType() == QXmlStreamReader::EndElement)) {
                     reader.readNextStartElement();
