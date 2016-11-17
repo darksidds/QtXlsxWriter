@@ -40,6 +40,9 @@
 #include "xlsxglobal.h"
 #include <QVariant>
 #include <QColor>
+#if QT_VERSION >= 0x050500
+#include <QDataStream>
+#endif
 
 class QXmlStreamWriter;
 class QXmlStreamReader;
