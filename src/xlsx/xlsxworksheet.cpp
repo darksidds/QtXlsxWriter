@@ -2790,6 +2790,10 @@ bool Worksheet::loadFromXmlFile(QIODevice *device)
                                             && reader.tokenType() == QXmlStreamReader::EndElement)) {
                     reader.readNextStartElement();
                 }
+            } else if (reader.name() == QLatin1String("autoFilter")) {
+				QXmlStreamAttributes attrs = reader.attributes();
+				d->autoFilter = new XlsxAutoFilter;
+				d->autoFilter->ref = CellRange(attrs.value(QLatin1String("ref")).toString());
             } else if (reader.name() == QLatin1String("printOptions")) {
                 d->loadXmlPrintOptions(reader);
             } else if (reader.name() == QLatin1String("pageMargins")) {

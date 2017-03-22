@@ -149,6 +149,33 @@ struct XlsxColumnInfo
     bool collapsed;
 };
 
+enum XlsxPaneState {
+	XLSX_PANE_FROZEN,
+	XLSX_PANE_FROZEN_SPLIT,
+	XLSX_PANE_SPLIT
+};
+
+struct XlsxPane
+{
+	int xSplit;
+	int ySplit;
+	CellReference topLeftCell;
+	XlsxPanePos activePane;
+	XlsxPaneState state;
+};
+
+struct XlsxSelection
+{
+	XlsxPanePos pane;
+	CellReference activeCell;
+	CellRange sqref;
+};
+
+struct XlsxAutoFilter
+{
+	CellRange ref;
+};
+
 struct XlsxPrintOptions
 {
     XlsxPrintOptions(bool horizontalCentered=false, bool verticalCentered=false, bool headings=false, bool gridLines=false, bool gridLinesSet=true) :
@@ -332,6 +359,10 @@ public:
     bool showRuler;
     bool showOutlineSymbols;
     bool showWhiteSpace;
+    
+    XlsxPane *pane = 0;
+    QList<XlsxSelection> selections;
+    XlsxAutoFilter *autoFilter = 0;
 
     XlsxPrintOptions printOptions;
     XlsxPageMargins pageMargins;
