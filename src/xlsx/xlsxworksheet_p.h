@@ -360,9 +360,9 @@ public:
     bool showOutlineSymbols;
     bool showWhiteSpace;
     
-    XlsxPane *pane = 0;
+    XlsxPane *pane;
     QList<XlsxSelection> selections;
-    XlsxAutoFilter *autoFilter = 0;
+    XlsxAutoFilter *autoFilter;
 
     XlsxPrintOptions printOptions;
     XlsxPageMargins pageMargins;
