@@ -311,6 +311,7 @@ public:
     void loadXmlSheetFormatProps(QXmlStreamReader &reader);
     void loadXmlSheetViews(QXmlStreamReader &reader);
     void loadXmlHyperlinks(QXmlStreamReader &reader);
+    void loadXmlPageSetup(QXmlStreamReader &reader);
     void loadXmlPrintOptions(QXmlStreamReader &reader);
     void loadXmlPageMargins(QXmlStreamReader &reader);
     void loadXmlPageSetup(QXmlStreamReader &reader);
@@ -359,6 +360,13 @@ public:
     bool showRuler;
     bool showOutlineSymbols;
     bool showWhiteSpace;
+    
+    //pageSetup
+    int paperSize;
+    bool pageOrientationPortait;
+    bool fitToPage;
+    int fitToHeight;
+    int fitToWidth;
     
     XlsxPane *pane;
     QList<XlsxSelection> selections;
