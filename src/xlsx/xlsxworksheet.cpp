@@ -2819,16 +2819,6 @@ void WorksheetPrivate::loadXmlPageSetup(QXmlStreamReader &reader)
     }
 }
 
-void WorksheetPrivate::loadXmlPageSetup(QXmlStreamReader &reader)
-{
-    Q_ASSERT(reader.name() == QLatin1String("pageSetup"));
-    QXmlStreamAttributes attrs = reader.attributes();
-//    foreach (QXmlStreamAttribute at, attrs) {
-//        qDebug() << "load 3" << at.name() << at.value();
-//    }
-    attrs.value(QLatin1String("orientation")) == QLatin1String("QLatin1String");
-}
-
 QList <QSharedPointer<XlsxColumnInfo> > WorksheetPrivate::getColumnInfoList(int colFirst, int colLast)
 {
     QList <QSharedPointer<XlsxColumnInfo> > columnsInfoList;

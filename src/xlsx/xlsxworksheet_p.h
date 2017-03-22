@@ -314,7 +314,6 @@ public:
     void loadXmlPageSetup(QXmlStreamReader &reader);
     void loadXmlPrintOptions(QXmlStreamReader &reader);
     void loadXmlPageMargins(QXmlStreamReader &reader);
-    void loadXmlPageSetup(QXmlStreamReader &reader);
 
     QList<QSharedPointer<XlsxRowInfo> > getRowInfoList(int rowFirst, int rowLast);
     QList <QSharedPointer<XlsxColumnInfo> > getColumnInfoList(int colFirst, int colLast);
