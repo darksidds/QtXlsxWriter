@@ -85,17 +85,19 @@ QT_BEGIN_NAMESPACE_XLSX
 */
 
 DocumentPrivate::DocumentPrivate(Document *p) :
-    q_ptr(p), defaultPackageName(QStringLiteral("Book1.xlsx"))
+    q_ptr(p), defaultPackageName(QStringLiteral("Book1.xlsx")),
+		workbook(nullptr), contentTypes(nullptr)
 {
+  loaded = false;
 }
 
 void DocumentPrivate::init()
 {
-    if (contentTypes.isNull())
-        contentTypes = QSharedPointer<ContentTypes>(new ContentTypes(ContentTypes::F_NewFromScratch));
+    if (contentTypes == nullptr)
+        contentTypes = new ContentTypes(ContentTypes::F_NewFromScratch);
 
-    if (workbook.isNull())
-        workbook = QSharedPointer<Workbook>(new Workbook(Workbook::F_NewFromScratch));
+    if (workbook == nullptr)
+        workbook = new Workbook(Workbook::F_NewFromScratch);
 }
 
 bool DocumentPrivate::loadPackage(QIODevice *device)
@@ -103,11 +105,18 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
     Q_Q(Document);
     ZipReader zipReader(device);
     QStringList filePaths = zipReader.filePaths();
+    loaded = false;
 
     //Load the Content_Types file
     if (!filePaths.contains(QLatin1String("[Content_Types].xml")))
         return false;
-    contentTypes = QSharedPointer<ContentTypes>(new ContentTypes(ContentTypes::F_LoadFromExists));
+
+	if (contentTypes != nullptr)
+	{
+		delete contentTypes;
+		contentTypes = nullptr;
+	}
+    contentTypes = new ContentTypes(ContentTypes::F_LoadFromExists);
     contentTypes->loadFromXmlData(zipReader.fileData(QStringLiteral("[Content_Types].xml")));
 
     //Load root rels file
@@ -144,7 +153,12 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
 
     //load workbook now, Get the workbook file path from the root rels file
     //In normal case, this should be "xl/workbook.xml"
-    workbook = QSharedPointer<Workbook>(new Workbook(Workbook::F_LoadFromExists));
+	if (workbook != nullptr)
+	{
+		delete workbook;
+		workbook = nullptr;
+	}
+    workbook = new Workbook(Workbook::F_LoadFromExists);
     QList<XlsxRelationship> rels_xl = rootRels.documentRelationships(QStringLiteral("/officeDocument"));
     if (rels_xl.isEmpty())
         return false;
@@ -228,6 +242,7 @@ bool DocumentPrivate::loadPackage(QIODevice *device)
         mf->set(zipReader.fileData(path), suffix);
     }
 
+    loaded = true;
     return true;
 }
 
@@ -880,7 +895,7 @@ QStringList Document::documentPropertyNames() const
 Workbook *Document::workbook() const
 {
     Q_D(const Document);
-    return d->workbook.data();
+    return d->workbook;
 }
 
 /*!
@@ -954,6 +969,16 @@ bool Document::deleteSheet(const QString &name)
 {
     Q_D(Document);
     return d->workbook->deleteSheet(sheetNames().indexOf(name));
+}
+
+/*!
+   Add the worksheet \a newName from AbstractSheet \a sheet.
+   Returns true if new sheet was added successfully.
+ */
+bool Document::addSheet(AbstractSheet * sheet, const QString &newName)
+{
+    Q_D(Document);
+    return d->workbook->addSheet(sheet, newName);
 }
 
 /*!
@@ -1033,6 +1058,15 @@ bool Document::saveAs(QIODevice *device) const
 {
     Q_D(const Document);
     return d->savePackage(device);
+}
+
+/*!
+* Returns true if document was loaded successfully.
+*/
+bool Document::isLoaded() const
+{
+    Q_D(const Document);
+    return d->loaded;
 }
 
 /*!

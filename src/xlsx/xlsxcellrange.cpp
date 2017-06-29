@@ -60,8 +60,8 @@ CellRange::CellRange(int top, int left, int bottom, int right)
 }
 
 CellRange::CellRange(const CellReference &topLeft, const CellReference &bottomRight)
-    : top(topLeft.row()), left(topLeft.column())
-    , bottom(bottomRight.row()), right(bottomRight.column())
+    : top(topLeft.row()), left(topLeft.column()), 
+      bottom(bottomRight.row()), right(bottomRight.column())
 {
 }
 
@@ -85,7 +85,8 @@ CellRange::CellRange(const char *range)
 
 void CellRange::init(const QString &range)
 {
-    QStringList rs = range.split(QLatin1Char(':'));
+    QStringList rs = range.split(QLatin1Char('!'));
+    rs = rs.last().split(QLatin1Char(':'));
     if (rs.size() == 2) {
         CellReference start(rs[0]);
         CellReference end(rs[1]);
@@ -134,6 +135,12 @@ QString CellRange::toString(bool row_abs, bool col_abs) const
     QString cell_1 = CellReference(top, left).toString(row_abs, col_abs);
     QString cell_2 = CellReference(bottom, right).toString(row_abs, col_abs);
     return cell_1 + QLatin1String(":") + cell_2;
+}
+
+QString CellRange::toString(int firstRow, int firstColumn, int lastRow, int lastColumn)
+{
+    CellRange cellRange(firstRow, firstColumn, lastRow, lastColumn);
+    return cellRange.toString();
 }
 
 /*!

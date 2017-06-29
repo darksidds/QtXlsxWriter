@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
+** Copyright (c) 2016 Golubchikov Mihail <https://github.com/rue-ryuzaki>
 ** All right reserved.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining
@@ -23,8 +23,8 @@
 **
 ****************************************************************************/
 
-#ifndef QXLSX_XLSXCOLOR_P_H
-#define QXLSX_XLSXCOLOR_P_H
+#ifndef QXLSX_MARKER_P_H
+#define QXLSX_MARKER_P_H
 
 //
 //  W A R N I N G
@@ -37,59 +37,66 @@
 // We mean it.
 //
 
-#include "xlsxglobal.h"
-#include <QVariant>
-#include <QColor>
-#if QT_VERSION >= 0x050500
-#include <QDataStream>
-#endif
+#include "xlsxmarker.h"
 
-class QXmlStreamWriter;
+#include <QSharedPointer>
+#include <QColor>
+
 class QXmlStreamReader;
+class QXmlStreamWriter;
 
 namespace QXlsx {
 
-class Styles;
-
-class Q_XLSX_EXPORT XlsxColor
+class MarkerPrivate
 {
+    Q_DECLARE_PUBLIC(Marker)
+
 public:
-    explicit XlsxColor(const QColor &color = QColor());
-    explicit XlsxColor(const QString &theme, const QString &tint=QString());
-    explicit XlsxColor(int index);
+    MarkerPrivate(Marker *p);
+    MarkerPrivate(Marker *p, const QColor& color);
+    MarkerPrivate(const MarkerPrivate * const);
+    ~MarkerPrivate();
 
-    bool isThemeColor() const;
-    bool isIndexedColor() const;
-    bool isRgbColor() const;
-    bool isInvalid() const;
+    void setColor(const QColor& color) {
+        enable = true;
+        xcolor = color;
+    }
+    QColor getColor() const { return xcolor; }
+    bool   isEnable() const { return enable; }
 
-    QColor rgbColor() const;
-    int indexedColor() const;
-    QStringList themeColor() const;
-
-    operator QVariant() const;
-
-    static QColor fromARGBString(const QString &c);
-    static QString toARGBString(const QColor &c);
-
-    bool saveToXml(QXmlStreamWriter &writer, const QString &node=QString()) const;
-    bool loadFromXml(QXmlStreamReader &reader);
+    Marker *q_ptr;
 
 private:
-    QVariant val;
+
+    QColor  xcolor;
+    bool    enable;
 };
 
-#if !defined(QT_NO_DATASTREAM)
-Q_XLSX_EXPORT QDataStream &operator<<(QDataStream &, const XlsxColor &);
-Q_XLSX_EXPORT QDataStream &operator>>(QDataStream &, XlsxColor &);
-#endif
+class ChartLinePrivate
+{
+    Q_DECLARE_PUBLIC(ChartLine)
 
-#ifndef QT_NO_DEBUG_STREAM
-Q_XLSX_EXPORT QDebug operator<<(QDebug dbg, const XlsxColor &c);
-#endif
+public:
+    ChartLinePrivate(ChartLine *p);
+    ChartLinePrivate(ChartLine *p, const QColor& color);
+    ChartLinePrivate(const ChartLinePrivate * const mp);
+
+    ~ChartLinePrivate();
+
+    void setColor(const QColor& color) {
+        enable = true;
+        xcolor = color;
+    }
+    QColor getColor() const { return xcolor; }
+    bool   isEnable() const { return enable; }
+
+private:
+    ChartLine *q_ptr;
+
+    QColor  xcolor;
+    bool    enable;
+};
 
 } // namespace QXlsx
 
-Q_DECLARE_METATYPE(QXlsx::XlsxColor)
-
-#endif // QXLSX_XLSXCOLOR_P_H
+#endif // QXLSX_MARKER_P_H

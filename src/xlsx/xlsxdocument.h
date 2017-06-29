@@ -113,6 +113,7 @@ public:
     bool copySheet(const QString &srcName, const QString &distName = QString());
     bool moveSheet(const QString &srcName, int distIndex);
     bool deleteSheet(const QString &name);
+    bool addSheet(AbstractSheet * sheet, const QString &newName=QString());
 
     Workbook *workbook() const;
     AbstractSheet *sheet(const QString &sheetName) const;
@@ -122,6 +123,8 @@ public:
     bool save() const;
     bool saveAs(const QString &xlsXname) const;
     bool saveAs(QIODevice *device) const;
+
+    bool isLoaded() const;
 
 private:
     Q_DISABLE_COPY(Document)

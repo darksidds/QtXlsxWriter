@@ -58,7 +58,6 @@ FormatPrivate::FormatPrivate(const FormatPrivate &other)
 
 FormatPrivate::~FormatPrivate()
 {
-
 }
 
 /*!
@@ -189,7 +188,6 @@ Format::Format()
 Format::Format(const Format &other)
     :d(other.d)
 {
-
 }
 
 /*!
@@ -563,6 +561,20 @@ bool Format::hasFontData() const
 Format::HorizontalAlignment Format::horizontalAlignment() const
 {
     return static_cast<Format::HorizontalAlignment>(intProperty(FormatPrivate::P_Alignment_AlignH, AlignHGeneral));
+}
+
+void Format::setHorizontalAlignment(Qt::Alignment qtalign)
+{
+    HorizontalAlignment align;
+    switch (qtalign) {
+    case Qt::AlignLeft: align = AlignLeft; break;
+    case Qt::AlignRight: align = AlignRight; break;
+    case Qt::AlignHCenter: align = AlignHCenter; break;
+    default:
+        align = AlignLeft;
+        break;
+    }
+    setHorizontalAlignment(align);
 }
 
 /*!
@@ -1421,6 +1433,187 @@ QColor Format::colorProperty(int propertyId, const QColor &defaultValue) const
     return qvariant_cast<XlsxColor>(prop).rgbColor();
 }
 
+/*!		
+  * \brief Format::custom		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief custom		
+  * \param num		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(const QString& num, bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     format.setNumberFormat(num);		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief custom		
+  * \param back		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(const QColor& back, bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     format.setPatternBackgroundColor(back);		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief custom		
+  * \param back		
+  * \param num		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(const QColor& back, const QString& num, bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     format.setNumberFormat(num);		
+     format.setPatternBackgroundColor(back);		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief Format::custom		
+  * \param align		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(HorizontalAlignment align, bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     format.setHorizontalAlignment(align);		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief Format::custom		
+  * \param align		
+  * \param num		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(HorizontalAlignment align, const QString& num, bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     format.setNumberFormat(num);		
+     format.setHorizontalAlignment(align);		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief Format::custom		
+  * \param align		
+  * \param back		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(HorizontalAlignment align, const QColor& back, bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     format.setPatternBackgroundColor(back);		
+     format.setHorizontalAlignment(align);		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief Format::custom		
+  * \param align		
+  * \param back		
+  * \param num		
+  * \param border		
+  * \param bold		
+  * \param italic		
+  * \return		
+  */		
+ Format Format::custom(HorizontalAlignment align, const QColor& back, const QString& num, bool border, bool bold, bool italic)		
+ {		
+     Format format;		
+     format.setFontBold(bold);		
+     format.setFontItalic(italic);		
+     if (border) {		
+         format.setBorderStyle(BorderThin);		
+     }		
+     format.setNumberFormat(num);		
+     format.setPatternBackgroundColor(back);		
+     format.setHorizontalAlignment(align);		
+     return format;		
+ }		
+ 		
+ /*!		
+  * \brief Format::customWrap		
+  * \param format		
+  * \param wrap		
+  * \return		
+  */		
+ Format Format::customWrap(const Format &format, bool wrap)		
+ {		
+     Format result(format);		
+     result.setTextWarp(wrap);		
+     return result;		
+ }
+ 
 #ifndef QT_NO_DEBUG_STREAM
 QDebug operator<<(QDebug dbg, const Format &f)
 {

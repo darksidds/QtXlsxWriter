@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 ** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
 ** All right reserved.
 **
@@ -34,6 +34,7 @@
 #include <QVariant>
 #include <QPointF>
 #include <QSharedPointer>
+#include <QSize>
 class QIODevice;
 class QDateTime;
 class QUrl;
@@ -53,10 +54,47 @@ class Relationships;
 class Chart;
 
 class WorksheetPrivate;
+
+enum XlsxPanePos {
+    XLSX_PANE_BOTTOM_LEFT,
+    XLSX_PANE_BOTTOM_RIGHT,
+    XLSX_PANE_TOP_LEFT,
+    XLSX_PANE_TOP_RIGHT
+};
+
 class Q_XLSX_EXPORT Worksheet : public AbstractSheet
 {
     Q_DECLARE_PRIVATE(Worksheet)
 public:
+    
+    enum PrintPageOrder
+    {
+        DownThenOver,
+        OverThenDown
+    };
+    
+    enum PrintOrientation
+    {
+        Default,
+        Landscape,
+        Portrait
+    };
+    
+    enum PrintCellComments
+    {
+        None,
+        AsDisplayed,
+        AtEnd
+    };
+    
+    enum PrintErrors
+    {
+        Displayed,
+        Blank,
+        Dash,
+        NA
+    };
+    
     bool write(const CellReference &row_column, const QVariant &value, const Format &format=Format());
     bool write(int row, int column, const QVariant &value, const Format &format=Format());
     QVariant read(const CellReference &row_column) const;
@@ -89,7 +127,7 @@ public:
     Cell *cellAt(const CellReference &row_column) const;
     Cell *cellAt(int row, int column) const;
 
-    bool insertImage(int row, int column, const QImage &image);
+    bool insertImage(int row, int column, const QImage &image, const QSize &size = QSize());
     Chart *insertChart(int row, int column, const QSize &size);
 
     bool mergeCells(const CellRange &range, const Format &format=Format());
@@ -105,6 +143,7 @@ public:
     double columnWidth(int column);
     Format columnFormat(int column);
     bool isColumnHidden(int column);
+    int baseColumnWidth() const;
 
     bool setRowHeight(int rowFirst,int rowLast, double height);
     bool setRowFormat(int rowFirst,int rowLast, const Format &format);
@@ -118,6 +157,22 @@ public:
     bool groupColumns(int colFirst, int colLast, bool collapsed = true);
     bool groupColumns(const CellRange &range, bool collapsed = true);
     CellRange dimension() const;
+    
+    bool freezePane(int row, int column, XlsxPanePos activePane = XLSX_PANE_BOTTOM_RIGHT);
+    bool freezePane(int row, int column, int topRow, int leftCol, XlsxPanePos activePane = XLSX_PANE_BOTTOM_RIGHT);
+    bool freezePane(const CellReference &cell, XlsxPanePos activePane = XLSX_PANE_BOTTOM_RIGHT);
+    bool freezePane(const CellReference &cell, const CellReference &topLeftCell, XlsxPanePos activePane = XLSX_PANE_BOTTOM_RIGHT);
+    bool splitPane(int xSplit, int ySplit, XlsxPanePos activePane = XLSX_PANE_BOTTOM_RIGHT);
+    bool splitPane(int xSplit, int ySplit, int topRow, int leftCol, XlsxPanePos activePane = XLSX_PANE_BOTTOM_RIGHT);
+    bool splitPane(int xSplit, int ySplit, const CellReference &topLeftCell, XlsxPanePos activePane = XLSX_PANE_BOTTOM_RIGHT);
+
+    bool setSelection(const CellReference &cell, const CellRange &range, XlsxPanePos pane = XLSX_PANE_BOTTOM_RIGHT);
+    bool setSelection(int row, int column, int firstRow, int firstColumn, int lastRow, int lastColumn, XlsxPanePos pane = XLSX_PANE_BOTTOM_RIGHT);
+    bool setSelection(const CellReference &cell, XlsxPanePos pane = XLSX_PANE_BOTTOM_RIGHT);
+    bool setSelection(int row, int column, XlsxPanePos pane = XLSX_PANE_BOTTOM_RIGHT);
+
+    bool setAutoFilter(const CellRange &range);
+    bool setAutoFilter(int firstRow, int firstColumn, int lastRow, int lastColumn);
 
     bool isWindowProtected() const;
     void setWindowProtected(bool protect);
@@ -139,9 +194,81 @@ public:
     void setOutlineSymbolsVisible(bool visible);
     bool isWhiteSpaceVisible() const;
     void setWhiteSpaceVisible(bool visible);
+    
+    //PageSetup
+    int paperSize();
+    /**
+     * Sets the paper size - see valid values on this website
+     *  https://msdn.microsoft.com/en-us/library/documentformat.openxml.spreadsheet.pagesetup%28v=office.14%29.aspx  
+     */
+    void setPaperSize(int size);
+    bool isLandscape();
+    bool isPortait();
+    void setOrientation(bool isPortait);
+    bool fitToPage();
+    void setFitToPage(bool fit);
+    int fitToWidth();
+    void setFitToWidth(int width);
+    int fitToHeight();
+    void setFitToHeight(int height);
+    
+    // printOptions
+    bool isPrintHorizontalCentered() const;
+    void setPrintHorizontalCentered(bool centered);
+    bool isPrintVerticalCentered() const;
+    void setPrintVerticalCentered(bool centered);
+    bool arePrintHeadingsVisible() const;
+    void setPrintHeadingsVisible(bool visible);
+    bool arePrintGridLinesVisible() const;
+    void setPrintGridLinesVisible(bool visible);
+    
+    // pageMargins
+    double printLeftMargin() const;
+    void setPrintLeftMargin(double margin);
+    double printRightMargin() const;
+    void setPrintRightMargin(double margin);
+    double printTopMargin() const;
+    void setPrintTopMargin(double margin);
+    double printBottomMargin() const;
+    void setPrintBottomMargin(double margin);
+    double printHeaderMargin() const;
+    void setPrintHeaderMargin(double margin);
+    double printFooterMargin() const;
+    void setPrintFooterMargin(double margin);
+    
+    // pageSetup
+    quint32 printPaperSize() const;
+    void setPrintPaperSize(quint32 size);
+    quint32 printScale() const;
+    void setPrintScale(quint32 scale);
+    quint32 printFirstPageNumber() const;
+    void setPrintFirstPageNumber(quint32 firstPage);
+    quint32 printFitToWidth() const;
+    void setPrintFitToWidth(quint32 fitToWidth);
+    quint32 printFitToHeight() const;
+    void setPrintFitToHeight(quint32 fitToHeight);
+    PrintPageOrder printPageOrder() const;
+    void setPrintPageOrder(PrintPageOrder pageOrder);
+    PrintOrientation printOrientation() const;
+    void setPrintOrientation(PrintOrientation orientation);
+    bool isPrintBlackAndWhite() const;
+    void setPrintBlackAndWhite(bool blackAndWhite);
+    bool isPrintDraft() const;
+    void setPrintDraft(bool isDraft);
+    PrintCellComments printCellComments() const;
+    void setPrintCellComments(PrintCellComments cellComments);
+    bool isPrintUseFirstPageNumber() const;
+    void setPrintUseFirstPageNumber(bool useFirstPage);
+    PrintErrors printErrors() const;
+    void setPrintErrors(PrintErrors errors);
+    quint32 printHorizontalDpi() const;
+    void setPrintHorizontalDpi(quint32 dpi);
+    quint32 printVerticalDpi() const;
+    void setprintVerticalDpi(quint32 dpi);
+    quint32 printCopies() const;
+    void setPrintCopies(quint32 copies);
 
     ~Worksheet();
-
 
 private:
     friend class DocumentPrivate;
@@ -149,6 +276,7 @@ private:
     friend class ::WorksheetTest;
     Worksheet(const QString &sheetName, int sheetId, Workbook *book, CreateFlag flag);
     Worksheet *copy(const QString &distName, int distId) const;
+    Worksheet *copy(const QString &distName) const;
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);

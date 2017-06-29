@@ -186,6 +186,100 @@ bool Workbook::defineName(const QString &name, const QString &formula, const QSt
     return true;
 }
 
+bool Workbook::definedName(const QString &name, QString &formula, QString &comment, const QString &scope)
+{
+    Q_D(Workbook);
+
+    int id = -1;
+    if (!scope.isEmpty()) {
+        for (int i = 0; i < d->sheets.size(); ++i) {
+          if (d->sheets[i]->sheetName().compare(scope, Qt::CaseInsensitive) == 0) {
+                id = d->sheets.at(i)->sheetId();
+                break;
+            }
+        }
+    }
+
+    for (int i = 0; i < d->definedNamesList.size(); ++i) {
+        if (d->definedNamesList[i].sheetId == id && d->definedNamesList[i].name == name) {
+            formula = d->definedNamesList[i].formula;
+            comment = d->definedNamesList[i].comment;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Workbook::definedName(int index, QString &name, QString &formula, QString &comment, const QString &scope)
+{
+    Q_D(Workbook);
+
+    int id = -1;
+    if (!scope.isEmpty()) {
+        for (int i = 0; i < d->sheets.size(); ++i) {
+            if (d->sheets[i]->sheetName() == scope) {
+                id = d->sheets[i]->sheetId();
+                break;
+            }
+        }
+    }
+
+    int pos = -1;
+    for (int i = 0; i < d->definedNamesList.size(); ++i) {
+        if (d->definedNamesList[i].sheetId == id) {
+            ++pos;
+            if (pos == index) {
+              name = d->definedNamesList[i].name;
+              formula = d->definedNamesList[i].formula;
+              comment = d->definedNamesList[i].comment;
+              return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Workbook::definedNameGlobal(int index, QString &name, QString &formula, QString &comment, QString &scope)
+{
+    Q_D(Workbook);
+
+    if (index < d->definedNamesList.count()) {
+        name = d->definedNamesList[index].name;
+        formula = d->definedNamesList[index].formula;
+        comment = d->definedNamesList[index].comment;
+        for (int i = 0; i < d->sheets.size(); ++i) {
+            if (d->sheets[i]->sheetId() == d->definedNamesList[index].sheetId) {
+                scope = d->sheets[i]->sheetName();
+                break;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+int Workbook::definedNameCount(const QString &scope)
+{
+    Q_D(Workbook);
+
+    int count = 0;
+    int id = -1;
+    if (!scope.isEmpty()) {
+        for (int i = 0; i < d->sheets.size(); ++i) {
+            if (d->sheets[i]->sheetName() == scope) {
+                id = d->sheets[i]->sheetId();
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < d->definedNamesList.size(); ++i) {
+        if (d->definedNamesList[i].sheetId == id) {
+            ++count;
+        }
+    }
+    return count;
+}
+
 AbstractSheet *Workbook::addSheet(const QString &name, AbstractSheet::SheetType type)
 {
     Q_D(Workbook);
@@ -325,29 +419,8 @@ bool Workbook::deleteSheet(int index)
 }
 
 /*!
- * Moves the worksheet form \a srcIndex to \a distIndex.
+ * Copy the worksheet form \a index to \a newName.
  */
-bool Workbook::moveSheet(int srcIndex, int distIndex)
-{
-    Q_D(Workbook);
-    if (srcIndex == distIndex)
-        return false;
-
-    if (srcIndex < 0 || srcIndex >= d->sheets.size())
-        return false;
-
-    QSharedPointer<AbstractSheet> sheet = d->sheets.takeAt(srcIndex);
-    d->sheetNames.takeAt(srcIndex);
-    if (distIndex >= 0 || distIndex <= d->sheets.size()) {
-        d->sheets.insert(distIndex, sheet);
-        d->sheetNames.insert(distIndex, sheet->sheetName());
-    } else {
-        d->sheets.append(sheet);
-        d->sheetNames.append(sheet->sheetName());
-    }
-    return true;
-}
-
 bool Workbook::copySheet(int index, const QString &newName)
 {
     Q_D(Workbook);
@@ -372,7 +445,54 @@ bool Workbook::copySheet(int index, const QString &newName)
     d->sheets.append(QSharedPointer<AbstractSheet> (sheet));
     d->sheetNames.append(sheet->sheetName());
 
-    return false;
+    return true;
+}
+
+/*!
+ * Moves the worksheet form \a srcIndex to \a distIndex.
+ */
+bool Workbook::moveSheet(int srcIndex, int distIndex)
+{
+    Q_D(Workbook);
+    if (srcIndex == distIndex)
+        return false;
+
+    if (srcIndex < 0 || srcIndex >= d->sheets.size())
+        return false;
+
+    QSharedPointer<AbstractSheet> sheet = d->sheets.takeAt(srcIndex);
+    d->sheetNames.takeAt(srcIndex);
+    if (distIndex >= 0 || distIndex <= d->sheets.size()) {
+        d->sheets.insert(distIndex, sheet);
+        d->sheetNames.insert(distIndex, sheet->sheetName());
+    } else {
+        d->sheets.append(sheet);
+        d->sheetNames.append(sheet->sheetName());
+    }
+    return true;
+}
+
+/*!
+ * Add sheet from another AbstractSheet \a sheet to \a newName.
+ */
+bool Workbook::addSheet(AbstractSheet * sheet, const QString &newName)
+{
+	Q_D(Workbook);
+    if (sheet == 0)
+        return false;
+
+    if (!newName.isEmpty()) {
+        //If user given an already in-used name, we should not continue any more!
+        if (d->sheetNames.contains(newName))
+            return false;
+    }
+
+    //++d->last_sheet_id;
+    Worksheet *copySheet = reinterpret_cast<Worksheet *>(sheet)->copy(newName);
+    d->sheets.append(QSharedPointer<AbstractSheet> (copySheet));
+    d->sheetNames.append(sheet->sheetName());
+
+    return true;
 }
 
 /*!
@@ -593,8 +713,9 @@ bool Workbook::loadFromXmlFile(QIODevice *device)
                  sheet->setFilePath(fullPath);
              } else if (reader.name() == QLatin1String("workbookPr")) {
                 QXmlStreamAttributes attrs = reader.attributes();
-                if (attrs.hasAttribute(QLatin1String("date1904")))
-                    d->date1904 = true;
+                if (attrs.hasAttribute(QLatin1String("date1904"))) {
+                    d->date1904 = QXlsx::parseXsdBoolean(attrs.value(QLatin1String("date1904")).toString(), false);
+                }
              } else if (reader.name() == QLatin1String("bookviews")) {
                 while (!(reader.name() == QLatin1String("bookviews") && reader.tokenType() == QXmlStreamReader::EndElement)) {
                     reader.readNextStartElement();

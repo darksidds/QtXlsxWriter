@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 ** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
 ** All right reserved.
 **
@@ -41,6 +41,7 @@ public:
     ~CellRange();
 
     QString toString(bool row_abs=false, bool col_abs=false) const;
+    static QString toString(int firstRow, int firstColumn, int lastRow, int lastColumn);
     bool isValid() const;
     inline void setFirstRow(int row) { top = row; }
     inline void setLastRow(int row) { bottom = row; }
@@ -56,6 +57,10 @@ public:
     inline CellReference topRight() const { return CellReference(top, right); }
     inline CellReference bottomLeft() const { return CellReference(bottom, left); }
     inline CellReference bottomRight() const { return CellReference(bottom, right); }
+    inline CellRange translated(int rowOffset, int colOffset) const
+    {
+        return CellRange(top + rowOffset, left + colOffset, bottom + rowOffset, right + colOffset);
+    }
 
     inline bool operator ==(const CellRange &other) const
     {

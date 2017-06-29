@@ -27,6 +27,7 @@
 #define QXLSX_CHART_H
 
 #include "xlsxabstractooxmlfile.h"
+#include "xlsxmarker.h"
 
 #include <QSharedPointer>
 
@@ -54,6 +55,7 @@ public:
         CT_Stock,
         CT_Radar,
         CT_Scatter,
+        CT_ScatterLine,
         CT_Pie,
         CT_Pie3D,
         CT_Doughnut,
@@ -65,11 +67,36 @@ public:
         CT_Bubble
     };
 
+    enum AxisType {
+        AT_X,
+        AT_Y,
+        AT_Z
+    };
+
+    enum Pos {
+        Left,
+        Right,
+        Top,
+        Bottom
+    };
+
     ~Chart();
 
-    void addSeries(const CellRange &range, AbstractSheet *sheet=0);
+    void addSeries(const CellRange &range, AbstractSheet *sheet = 0, ChartLine line = ChartLine());
+    void addSeries(const CellRange &signature, const CellRange &values,
+                   AbstractSheet *sheet = 0, ChartLine line = ChartLine());
     void setChartType(ChartType type);
     void setChartStyle(int id);
+    void setChartTytle(const QString & title);
+
+    void setAxisMaxScope(AxisType, double);
+    void setAxisMinScope(AxisType, double);
+    void setAxisMaxAuto(AxisType);
+    void setAxisMinAuto(AxisType);
+    void enableAxisMajorGridLines(AxisType, bool);
+    void enableAxisMinorGridLines(AxisType, bool);
+
+    void setShowLegend(bool, Pos);
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);

@@ -93,7 +93,9 @@ SET(INCLUDE_FILES
   src/xlsx/xlsxdatavalidation.h
   src/xlsx/xlsxdocument.h
   src/xlsx/xlsxformat.h
+  src/xlsx/xlsxformula.h
   src/xlsx/xlsxglobal.h
+  src/xlsx/xlsxmarker.h
   src/xlsx/xlsxrichstring.h
   src/xlsx/xlsxworkbook.h
   src/xlsx/xlsxworksheet.h
