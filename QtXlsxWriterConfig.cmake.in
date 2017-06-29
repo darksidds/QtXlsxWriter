@@ -26,7 +26,7 @@ set(QtXlsxWriter_CONFIG_PATH "@QtXlsxWriter_CONFIG_PATH@")
 set(QtXlsxWriter_FOUND TRUE CACHE BOOL "" FORCE)
 set(QtXlsxWriter_LIBS QtXlsxWriter)
 set(QtXlsxWriter_LIB_BIN      ${QtXlsxWriter_CONFIG_PATH}/bin)
-set(QtXlsxWriter_LIB_DIR      ${QtXlsxWriter_CONFIG_PATH}/lib)
+set(QtXlsxWriter_LIB_DIR      ${QtXlsxWriter_CONFIG_PATH}/lib@LIB_SUFFIX@)
 set(QtXlsxWriter_INCLUDE_DIRS ${QtXlsxWriter_CONFIG_PATH}/include)
 
 include_directories(BEFORE    ${QtXlsxWriter_INCLUDE_DIRS})

@@ -60,11 +60,12 @@ configure_file(QtXlsxWriterConfig.cmake.in QtXlsxWriterConfig.cmake @ONLY)
 #####
 INSTALL(TARGETS QtXlsxWriter
   RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib${LIB_SUFFIX}
+  ARCHIVE DESTINATION lib${LIB_SUFFIX}
 )
 
-INSTALL(FILES  ${CMAKE_CURRENT_BINARY_DIR}/QtXlsxWriterConfig.cmake DESTINATION lib/cmake/${PROJECT_NAME})
+INSTALL(FILES  ${CMAKE_CURRENT_BINARY_DIR}/QtXlsxWriterConfig.cmake DESTINATION
+    lib${LIB_SUFFIX}/cmake/${PROJECT_NAME})
 
 SET(INCLUDE_FILES 
   src/xlsx/xlsxabstractooxmlfile.h
