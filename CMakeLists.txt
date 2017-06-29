@@ -6,43 +6,66 @@ set(BUILD_SHARED_LIBS TRUE)
 set(CMAKE_AUTOMOC ON)
 
 if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
+    set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 file(
-	GLOB
-	QtXlsxWriter_SOURCE_FILES 
-	${CMAKE_CURRENT_SOURCE_DIR}/src/xlsx/*.cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/QtXlsxWriterTest_automoc.cpp
+    GLOB
+    QtXlsxWriter_SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/xlsx/*.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/QtXlsxWriterTest_automoc.cpp
 )
 
 find_package(Qt5 5.5 REQUIRED Core Gui Test)
 include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/src/xlsx/
-	${Qt5Core_INCLUDE_DIRS} 
-	${Qt5Gui_INCLUDE_DIRS}
-	${Qt5Gui_PRIVATE_INCLUDE_DIRS} )
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/xlsx/
+    ${Qt5Core_INCLUDE_DIRS}
+    ${Qt5Gui_INCLUDE_DIRS}
+    ${Qt5Gui_PRIVATE_INCLUDE_DIRS} )
 
 add_library(QtXlsxWriter SHARED "${QtXlsxWriter_SOURCE_FILES}")
 
 # automatically add C++11 support with GCC
 if(NOT MSVC)
-    target_compile_features(QtXlsxWriter PRIVATE cxx_range_for)
+  target_compile_features(QtXlsxWriter PRIVATE cxx_range_for)
 endif()
 
-# Gather current version from git describe output
+##
+#
+# Define product version.
+#
+# Version is making form "git describe" output if avalable
+# or hardcoded base version is used when git is not available
+#
+##
+
+set (PRODUCT_VERSION 0.4)
+set (PRODUCT_SOVERSION 0)
 
 execute_process(COMMAND git describe --long --match "v[0-9]*"
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                OUTPUT_VARIABLE PRODUCT_VERSION
+                OUTPUT_VARIABLE PRODUCT_VERSION_GIT
                 OUTPUT_STRIP_TRAILING_WHITESPACE
                 ERROR_QUIET)
 
-string(REGEX REPLACE "^v([0-9]+)\\.([0-9]+)-([0-9]+).*$" "\\1\.\\2\.\\3" PRODUCT_VERSION ${PRODUCT_VERSION})
+if(PRODUCT_VERSION_GIT)
+    string(REGEX REPLACE
+        "^v([0-9]+)\\.([0-9]+)-([0-9]+).*$"
+        "\\1\.\\2\.\\3"
+        PRODUCT_VERSION
+        ${PRODUCT_VERSION_GIT} )
+endif()
 
-message(STATUS "Version set to: ${PRODUCT_VERSION}")
+message(STATUS "Version is: ${PRODUCT_VERSION}")
+message(STATUS ".so version is: ${PRODUCT_SOVERSION}")
 
-set_target_properties(QtXlsxWriter PROPERTIES VERSION ${PRODUCT_VERSION} SOVERSION 0)
+##
+#
+# Properties
+#
+##
+
+set_target_properties(QtXlsxWriter PROPERTIES VERSION ${PRODUCT_VERSION} SOVERSION ${PRODUCT_SOVERSION})
 set_target_properties(QtXlsxWriter PROPERTIES DEBUG_POSTFIX "d")
 target_link_libraries(QtXlsxWriter ${Qt5Core_LIBRARIES})
 target_link_libraries(QtXlsxWriter ${Qt5Gui_LIBRARIES})
@@ -55,7 +78,7 @@ if(BUILD_EXAMPLES)
     add_custom_command(TARGET QtXlsxWriter POST_BUILD
         COMMAND ${CMAKE_COMMAND}
         -E copy_directory $<CONFIGURATION> ${CMAKE_CURRENT_BINARY_DIR}/examples/xlsx/$<CONFIGURATION>)
-	add_subdirectory(examples/xlsx)
+        add_subdirectory(examples/xlsx)
 endif()
 
 ##
@@ -80,7 +103,7 @@ INSTALL(TARGETS QtXlsxWriter
 INSTALL(FILES  ${CMAKE_CURRENT_BINARY_DIR}/QtXlsxWriterConfig.cmake DESTINATION
     lib${LIB_SUFFIX}/cmake/${PROJECT_NAME})
 
-SET(INCLUDE_FILES 
+SET(INCLUDE_FILES
   src/xlsx/xlsxabstractooxmlfile.h
   src/xlsx/xlsxabstractsheet.h
   src/xlsx/xlsxcell.h
