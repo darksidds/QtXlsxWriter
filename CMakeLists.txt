@@ -30,7 +30,19 @@ if(NOT MSVC)
     target_compile_features(QtXlsxWriter PRIVATE cxx_range_for)
 endif()
 
-set_target_properties(QtXlsxWriter PROPERTIES VERSION 0.3.0 SOVERSION 0)
+# Gather current version from git describe output
+
+execute_process(COMMAND git describe --long --match "v[0-9]*"
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                OUTPUT_VARIABLE PRODUCT_VERSION
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET)
+
+string(REGEX REPLACE "^v([0-9]+)\\.([0-9]+)-([0-9]+).*$" "\\1\.\\2\.\\3" PRODUCT_VERSION ${PRODUCT_VERSION})
+
+message(STATUS "Version set to: ${PRODUCT_VERSION}")
+
+set_target_properties(QtXlsxWriter PROPERTIES VERSION ${PRODUCT_VERSION} SOVERSION 0)
 set_target_properties(QtXlsxWriter PROPERTIES DEBUG_POSTFIX "d")
 target_link_libraries(QtXlsxWriter ${Qt5Core_LIBRARIES})
 target_link_libraries(QtXlsxWriter ${Qt5Gui_LIBRARIES})
