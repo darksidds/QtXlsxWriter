@@ -30,6 +30,7 @@ if(NOT MSVC)
     target_compile_features(QtXlsxWriter PRIVATE cxx_range_for)
 endif()
 
+set_target_properties(QtXlsxWriter PROPERTIES VERSION 0.3.0 SOVERSION 0)
 set_target_properties(QtXlsxWriter PROPERTIES DEBUG_POSTFIX "d")
 target_link_libraries(QtXlsxWriter ${Qt5Core_LIBRARIES})
 target_link_libraries(QtXlsxWriter ${Qt5Gui_LIBRARIES})
