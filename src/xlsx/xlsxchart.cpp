@@ -264,7 +264,7 @@ void Chart::setChartStyle(int id)
     //!Todo
 }
 
-void Chart::setChartTytle(const QString &title)
+void Chart::setChartTitle(const QString &title)
 {
     Q_D(Chart);
     d->title = title;

@@ -87,7 +87,7 @@ public:
                    AbstractSheet *sheet = 0, ChartLine line = ChartLine());
     void setChartType(ChartType type);
     void setChartStyle(int id);
-    void setChartTytle(const QString & title);
+    void setChartTitle(const QString & title);
 
     void setAxisMaxScope(AxisType, double);
     void setAxisMinScope(AxisType, double);
