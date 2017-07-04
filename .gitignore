@@ -1,5 +1,6 @@
 syntax: glob
 *.pro.user*
+*.user
 *.autosave
 *.app
 *.moc

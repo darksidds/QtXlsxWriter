@@ -13,6 +13,7 @@ file(
     GLOB
     QtXlsxWriter_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/xlsx/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/xlsx/*.h
     ${CMAKE_CURRENT_BINARY_DIR}/QtXlsxWriterTest_automoc.cpp
 )
 
