@@ -142,7 +142,7 @@ struct XlsxColumnInfo
     int firstColumn;
     int lastColumn;
     bool customWidth;
-    double width;    
+    double width;
     Format format;
     bool hidden;
     int outlineLevel;
@@ -150,30 +150,30 @@ struct XlsxColumnInfo
 };
 
 enum XlsxPaneState {
-	XLSX_PANE_FROZEN,
-	XLSX_PANE_FROZEN_SPLIT,
-	XLSX_PANE_SPLIT
+    XLSX_PANE_FROZEN,
+    XLSX_PANE_FROZEN_SPLIT,
+    XLSX_PANE_SPLIT
 };
 
 struct XlsxPane
 {
-	int xSplit;
-	int ySplit;
-	CellReference topLeftCell;
-	XlsxPanePos activePane;
-	XlsxPaneState state;
+    int xSplit;
+    int ySplit;
+    CellReference topLeftCell;
+    XlsxPanePos activePane;
+    XlsxPaneState state;
 };
 
 struct XlsxSelection
 {
-	XlsxPanePos pane;
-	CellReference activeCell;
-	CellRange sqref;
+    XlsxPanePos pane;
+    CellReference activeCell;
+    CellRange sqref;
 };
 
 struct XlsxAutoFilter
 {
-	CellRange ref;
+    CellRange ref;
 };
 
 struct XlsxPrintOptions
@@ -183,7 +183,7 @@ struct XlsxPrintOptions
     {
 
     }
-    
+
     bool horizontalCentered;
     bool verticalCentered;
     bool headings;
@@ -199,7 +199,7 @@ struct XlsxPageMargins
     {
 
     }
-    
+
     double left;
     double right;
     double top;
@@ -210,47 +210,47 @@ struct XlsxPageMargins
 
 struct XlsxPageSetup
 {
-    
+
     static QString pageOrderString(Worksheet::PrintPageOrder pageOrder)
     {
         switch (pageOrder) {
-            case Worksheet::DownThenOver: return "downThenOver";
-            case Worksheet::OverThenDown: return "overThenDown";
-            default:                      return "error";
+            case Worksheet::DownThenOver: return QLatin1String("downThenOver");
+            case Worksheet::OverThenDown: return QLatin1String("overThenDown");
+            default:                      return QLatin1String("error");
         }
     }
-    
+
     static QString orientationString(Worksheet::PrintOrientation orientation)
     {
         switch (orientation) {
-            case Worksheet::Default:   return "default";
-            case Worksheet::Portrait:  return "portrait";
-            case Worksheet::Landscape: return "landscape";
-            default:                   return "error";
+            case Worksheet::Default:   return QLatin1String("default");
+            case Worksheet::Portrait:  return QLatin1String("portrait");
+            case Worksheet::Landscape: return QLatin1String("landscape");
+            default:                   return QLatin1String("error");
         }
     }
-    
+
     static QString cellCommentsString(Worksheet::PrintCellComments cellComments)
     {
         switch (cellComments) {
-            case Worksheet::None:        return "none";
-            case Worksheet::AsDisplayed: return "asDisplayed";
-            case Worksheet::AtEnd:       return "atEnd";
-            default:                     return "error";
+            case Worksheet::None:        return QLatin1String("none");
+            case Worksheet::AsDisplayed: return QLatin1String("asDisplayed");
+            case Worksheet::AtEnd:       return QLatin1String("atEnd");
+            default:                     return QLatin1String("error");
         }
     }
-    
+
     static QString errorsString(Worksheet::PrintErrors errors)
     {
         switch (errors) {
-            case Worksheet::Displayed: return "displayed";
-            case Worksheet::Blank:     return "blank";
-            case Worksheet::Dash:      return "dash";
-            case Worksheet::NA:        return "NA";
-            default:                   return "error";
+            case Worksheet::Displayed: return QLatin1String("displayed");
+            case Worksheet::Blank:     return QLatin1String("blank");
+            case Worksheet::Dash:      return QLatin1String("dash");
+            case Worksheet::NA:        return QLatin1String("NA");
+            default:                   return QLatin1String("error");
         }
     }
-    
+
     // defaults are from the XMLSchema
     XlsxPageSetup() :
         paperSize(1), scale(100), firstPageNumber(1), fitToWidth(1), fitToHeight(1), pageOrder(Worksheet::DownThenOver),
@@ -259,7 +259,7 @@ struct XlsxPageSetup
     {
 
     }
-    
+
     quint32 paperSize;
     quint32 scale;
     quint32 firstPageNumber;
@@ -359,14 +359,14 @@ public:
     bool showRuler;
     bool showOutlineSymbols;
     bool showWhiteSpace;
-    
+
     //pageSetup
     int paperSize;
     bool pageOrientationPortait;
     bool fitToPage;
     int fitToHeight;
     int fitToWidth;
-    
+
     XlsxPane *pane;
     QList<XlsxSelection> selections;
     XlsxAutoFilter *autoFilter;
