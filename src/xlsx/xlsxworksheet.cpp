@@ -1437,6 +1437,7 @@ void Worksheet::saveToXmlFile(QIODevice *device) const
     d->saveXmlPrintOptions(writer);
     d->saveXmlPageMargins(writer);
     d->saveXmlPageSetup(writer);
+    d->saveXmlHeaderFooter(writer);
 
     writer.writeEndElement();//worksheet
     writer.writeEndDocument();
@@ -1716,6 +1717,55 @@ void WorksheetPrivate::saveXmlPageSetup(QXmlStreamWriter &writer) const
     if (pageSetup.rID                != defaultValues.rID)                writer.writeAttribute(QStringLiteral("r:id"),               pageSetup.rID);
 
     writer.writeEndElement();
+}
+
+static inline void
+saveXmlHeaderFooterBoolAttributeIfNeed(QXmlStreamWriter& writer,
+                                       const QString& attribute, bool value,
+                                       bool defaultValue)
+{
+    if (value == defaultValue)
+        return;
+    writer.writeAttribute(attribute,
+                          value ? QStringLiteral("1") : QStringLiteral("0"));
+}
+
+static inline void
+saveXmlHeaderFooterStringElementIfNeed(QXmlStreamWriter& writer,
+                                       const QString& element,
+                                       const QString& value)
+{
+    if (value.isEmpty())
+        return;
+    writer.writeStartElement(element);
+    writer.writeCharacters(value);
+    writer.writeEndElement(); // firstHeader
+}
+
+void WorksheetPrivate::saveXmlHeaderFooter(QXmlStreamWriter &writer) const
+{
+    XlsxHeaderFooter defaultValues;
+    // Check if no necessary to write
+    if (headerFooter.isEqual(defaultValues))
+        return;
+    writer.writeStartElement(QStringLiteral("headerFooter"));
+    saveXmlHeaderFooterBoolAttributeIfNeed(writer, QStringLiteral("alignWithMargins"), headerFooter.alignWithMargins, defaultValues.alignWithMargins);
+    saveXmlHeaderFooterBoolAttributeIfNeed(writer, QStringLiteral("differentFirst"),   headerFooter.differentFirst,   defaultValues.differentFirst);
+    saveXmlHeaderFooterBoolAttributeIfNeed(writer, QStringLiteral("differentOddEven"), headerFooter.differentOddEven, defaultValues.differentOddEven);
+    saveXmlHeaderFooterBoolAttributeIfNeed(writer, QStringLiteral("scaleWithDoc"),     headerFooter.scaleWithDoc,     defaultValues.scaleWithDoc);
+
+    if (headerFooter.differentFirst)
+    {
+        saveXmlHeaderFooterStringElementIfNeed(writer, QStringLiteral("firstHeader"), headerFooter.firstHeader);
+        saveXmlHeaderFooterStringElementIfNeed(writer, QStringLiteral("firstFooter"), headerFooter.firstFooter);
+    }
+    saveXmlHeaderFooterStringElementIfNeed(writer, QStringLiteral("oddHeader"), headerFooter.oddHeader);
+    saveXmlHeaderFooterStringElementIfNeed(writer, QStringLiteral("oddFooter"), headerFooter.oddFooter);
+    {
+        saveXmlHeaderFooterStringElementIfNeed(writer, QStringLiteral("evenHeader"), headerFooter.evenHeader);
+        saveXmlHeaderFooterStringElementIfNeed(writer, QStringLiteral("evenFooter"), headerFooter.evenFooter);
+    }
+    writer.writeEndElement(); // headerFooter
 }
 
 void WorksheetPrivate::splitColsInfo(int colFirst, int colLast)
@@ -2720,7 +2770,7 @@ void WorksheetPrivate::loadXmlPageMargins(QXmlStreamReader &reader)
 {
     Q_ASSERT(reader.name() == QLatin1String("pageMargins"));
     QXmlStreamAttributes attributes = reader.attributes();
-    
+
     foreach (QXmlStreamAttribute attrib, attributes) {
         if(attrib.name() == QLatin1String("left") ) {
             pageMargins.left = attrib.value().toString().toDouble();
@@ -2734,6 +2784,56 @@ void WorksheetPrivate::loadXmlPageMargins(QXmlStreamReader &reader)
             pageMargins.header = attrib.value().toString().toDouble();
         } else if(attrib.name() == QLatin1String("footer")) {
             pageMargins.footer = attrib.value().toString().toDouble();
+        }
+    }
+}
+
+static inline bool
+attribToBool(const QXmlStreamAttribute& attrib, bool defaultValue)
+{
+    return parseXsdBoolean(attrib.value().toString(), defaultValue);
+}
+
+void WorksheetPrivate::loadXmlHeaderFooter(QXmlStreamReader &reader)
+{
+    Q_ASSERT(reader.name() == QLatin1String("headerFooter"));
+    Q_ASSERT(headerFooter.isEqual(XlsxHeaderFooter())); // same as default
+
+    QXmlStreamAttributes attributes = reader.attributes();
+
+    foreach (QXmlStreamAttribute attrib, attributes) {
+        if(attrib.name() == QLatin1String("alignWithMargins") ) {
+            headerFooter.alignWithMargins = attribToBool(attrib, headerFooter.alignWithMargins);
+        } else if(attrib.name() == QLatin1String("differentFirst")) {
+            headerFooter.differentFirst = attribToBool(attrib, headerFooter.differentFirst);
+        } else if(attrib.name() == QLatin1String("differentOddEven")) {
+            headerFooter.differentOddEven = attribToBool(attrib, headerFooter.differentOddEven);
+        } else if(attrib.name() == QLatin1String("scaleWithDoc")) {
+            headerFooter.scaleWithDoc = attribToBool(attrib, headerFooter.scaleWithDoc);
+        }
+    }
+
+    while (!reader.atEnd() && !(reader.name() == QLatin1String("headerFooter")
+            && reader.tokenType() == QXmlStreamReader::EndElement)) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement
+                && reader.name() == QLatin1String("firstHeader")) {
+            headerFooter.firstHeader = reader.readElementText();
+        } else if (reader.tokenType() == QXmlStreamReader::StartElement
+                && reader.name() == QLatin1String("firstFooter")) {
+            headerFooter.firstFooter = reader.readElementText();
+        } else if (reader.tokenType() == QXmlStreamReader::StartElement
+                && reader.name() == QLatin1String("oddHeader")) {
+            headerFooter.oddHeader = reader.readElementText();
+        } else if (reader.tokenType() == QXmlStreamReader::StartElement
+                && reader.name() == QLatin1String("oddFooter")) {
+            headerFooter.oddFooter = reader.readElementText();
+        } else if (reader.tokenType() == QXmlStreamReader::StartElement
+                && reader.name() == QLatin1String("evenHeader")) {
+            headerFooter.evenHeader = reader.readElementText();
+        } else if (reader.tokenType() == QXmlStreamReader::StartElement
+                && reader.name() == QLatin1String("evenFooter")) {
+            headerFooter.evenFooter = reader.readElementText();
         }
     }
 }
@@ -2900,6 +3000,8 @@ bool Worksheet::loadFromXmlFile(QIODevice *device)
                 d->loadXmlPageMargins(reader);
             } else if (reader.name() == QLatin1String("pageSetup")) {
                 d->loadXmlPageSetup(reader);
+            } else if (reader.name() == QLatin1String("headerFooter")) {
+                d->loadXmlHeaderFooter(reader);
             }
         }
     }
