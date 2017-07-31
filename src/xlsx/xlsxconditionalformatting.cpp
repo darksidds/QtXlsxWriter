@@ -28,6 +28,7 @@
 #include "xlsxworksheet.h"
 #include "xlsxcellrange.h"
 #include "xlsxstyles_p.h"
+#include "xlsxutility_p.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -465,19 +466,19 @@ bool ConditionalFormattingPrivate::readCfRule(QXmlStreamReader &reader, XlsxCfRu
             rule->dxfFormat.setDxfIndex(id);
     }
     rule->priority = attrs.value(QLatin1String("priority")).toString().toInt();
-    if (attrs.value(QLatin1String("stopIfTrue")) == QLatin1String("1")) {
+    if (parseXsdBoolean(attrs.value(QLatin1String("stopIfTrue")).toString(), false)) {
         //default is false
         rule->attrs[XlsxCfRuleData::A_stopIfTrue] = QLatin1String("1");
     }
-    if (attrs.value(QLatin1String("aboveAverage")) == QLatin1String("0")) {
+    if (!parseXsdBoolean(attrs.value(QLatin1String("aboveAverage")).toString(), true)) {
         //default is true
         rule->attrs[XlsxCfRuleData::A_aboveAverage] = QLatin1String("0");
     }
-    if (attrs.value(QLatin1String("percent")) == QLatin1String("1")) {
+    if (parseXsdBoolean(attrs.value(QLatin1String("percent")).toString(), false)) {
         //default is false
         rule->attrs[XlsxCfRuleData::A_percent] = QLatin1String("1");
     }
-    if (attrs.value(QLatin1String("bottom")) == QLatin1String("1")) {
+    if (parseXsdBoolean(attrs.value(QLatin1String("bottom")).toString(), false)) {
         //default is false
         rule->attrs[XlsxCfRuleData::A_bottom] = QLatin1String("1");
     }
@@ -496,7 +497,7 @@ bool ConditionalFormattingPrivate::readCfRule(QXmlStreamReader &reader, XlsxCfRu
     if (attrs.hasAttribute(QLatin1String("stdDev")))
         rule->attrs[XlsxCfRuleData::A_stdDev] = attrs.value(QLatin1String("stdDev")).toString();
 
-    if (attrs.value(QLatin1String("equalAverage")) == QLatin1String("1")) {
+    if (parseXsdBoolean(attrs.value(QLatin1String("equalAverage")).toString(), false)) {
         //default is false
         rule->attrs[XlsxCfRuleData::A_equalAverage] = QLatin1String("1");
     }
@@ -530,7 +531,7 @@ bool ConditionalFormattingPrivate::readCfDataBar(QXmlStreamReader &reader, XlsxC
 {
     Q_ASSERT(reader.name() == QLatin1String("dataBar"));
     QXmlStreamAttributes attrs = reader.attributes();
-    if (attrs.value(QLatin1String("showValue")) == QLatin1String("0"))
+    if (!parseXsdBoolean(attrs.value(QLatin1String("showValue")).toString(), true))
         rule->attrs[XlsxCfRuleData::A_hideData] = QStringLiteral("1");
 
     while (!reader.atEnd()) {
@@ -617,10 +618,8 @@ bool ConditionalFormattingPrivate::readCfVo(QXmlStreamReader &reader, XlsxCfVoDa
 
     cfvo.type = t;
     cfvo.value = attrs.value(QLatin1String("val")).toString();
-    if (attrs.value(QLatin1String("gte")) == QLatin1String("0")) {
-        //default is true
-        cfvo.gte = false;
-    }
+    cfvo.gte = parseXsdBoolean(attrs.value(QLatin1String("gte")).toString(), true);
+
     return true;
 }
 
