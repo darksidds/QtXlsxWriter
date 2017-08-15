@@ -44,6 +44,26 @@ ChartPrivate::~ChartPrivate()
 {
 }
 
+int ChartPrivate::AxisIndex(Chart::AxisType type) const
+{
+    switch (type)
+    {
+    case Chart::AxisType::AT_X:
+        Q_ASSERT(axisList.isEmpty());
+        return 0;
+        break;
+    case Chart::AxisType::AT_Y:
+        Q_ASSERT(axisList.size() > 1);
+        return 1;
+        break;
+    case Chart::AxisType::AT_Z:
+        Q_ASSERT(axisList.size() == 3);
+        return 2;
+        break;
+    }
+    return -1;
+}
+
 /*!
  * \class Chart
  * \inmodule QtXlsx
@@ -258,6 +278,7 @@ void Chart::setChartType(ChartType type)
  * \internal
  *
  */
+
 void Chart::setChartStyle(int id)
 {
     Q_UNUSED(id)
@@ -400,6 +421,24 @@ void Chart::enableAxisMinorGridLines(AxisType type, bool activate)
     }
     if (index != -1)
         d->axisList[index]->minorLines = activate;
+}
+
+QString
+Chart::getAxisName(AxisType type) const
+{
+    Q_D(const Chart);
+    int index = d->AxisIndex(type);
+    return (index != -1) ? d->axisList[index]->name :  QString();
+}
+
+void
+Chart::setAxisName(AxisType type, const QString& name)
+{
+    Q_D(Chart);
+    int index = d->AxisIndex(type);
+    if (index == -1)
+        return;
+    d->axisList[index]->name = name;
 }
 
 void Chart::setShowLegend(bool show, Pos pos)
@@ -720,37 +759,42 @@ bool ChartPrivate::loadXmlLegend(QXmlStreamReader &reader)
     return true;
 }
 
+void
+ChartPrivate::saveXmlTx(QXmlStreamWriter &writer, const QString& text) const
+{
+    writer.writeStartElement(QStringLiteral("c:tx"));
+    writer.writeStartElement(QStringLiteral("c:rich"));
+    writer.writeEmptyElement(QStringLiteral("a:bodyPr"));
+    writer.writeEmptyElement(QStringLiteral("a:lstStyle"));
+    writer.writeStartElement(QStringLiteral("a:p"));
+    writer.writeStartElement(QStringLiteral("a:pPr"));
+    writer.writeEmptyElement(QStringLiteral("a:defRPr"));
+    writer.writeEndElement(); //a:pPr
+    writer.writeStartElement(QStringLiteral("a:r"));
+    writer.writeStartElement(QStringLiteral("a:rPr"));
+    writer.writeAttribute(QStringLiteral("lang"), QStringLiteral("en-US"));
+    writer.writeEndElement(); //a:rPr
+    writer.writeStartElement(QStringLiteral("a:t"));
+    writer.writeCharacters(text);
+    writer.writeEndElement(); //a:t
+    writer.writeEndElement(); //a:r
+
+    writer.writeStartElement(QStringLiteral("a:endParaRPr"));
+    writer.writeAttribute(QStringLiteral("lang"), QStringLiteral("en-US"));
+    writer.writeEndElement(); //a:endParaRPr
+
+    writer.writeEndElement(); //a:p
+    writer.writeEndElement(); //c:rich
+    writer.writeEndElement(); //c:tx
+}
+
 void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
 {
     writer.writeStartElement(QStringLiteral("c:chart"));
     if (!title.isEmpty()) {
         // write title
         writer.writeStartElement(QStringLiteral("c:title"));
-        writer.writeStartElement(QStringLiteral("c:tx"));
-        writer.writeStartElement(QStringLiteral("c:rich"));
-        writer.writeEmptyElement(QStringLiteral("a:bodyPr"));
-        writer.writeEmptyElement(QStringLiteral("a:lstStyle"));
-        writer.writeStartElement(QStringLiteral("a:p"));
-        writer.writeStartElement(QStringLiteral("a:pPr"));
-        writer.writeEmptyElement(QStringLiteral("a:defRPr"));
-        writer.writeEndElement(); //a:pPr
-        writer.writeStartElement(QStringLiteral("a:r"));
-        writer.writeStartElement(QStringLiteral("a:rPr"));
-        writer.writeAttribute(QStringLiteral("lang"), QStringLiteral("en-US"));
-        writer.writeEndElement(); //a:rPr
-        writer.writeStartElement(QStringLiteral("a:t"));
-        writer.writeCharacters(title);
-        writer.writeEndElement(); //a:t
-        writer.writeEndElement(); //a:r
-
-        writer.writeStartElement(QStringLiteral("a:endParaRPr"));
-        writer.writeAttribute(QStringLiteral("lang"), QStringLiteral("en-US"));
-        writer.writeEndElement(); //a:endParaRPr
-
-        writer.writeEndElement(); //a:p
-        writer.writeEndElement(); //c:rich
-        writer.writeEndElement(); //c:tx
-
+        saveXmlTx(writer, title);
         writer.writeStartElement(QStringLiteral("c:overlay"));
         writer.writeAttribute(QStringLiteral("val"), QStringLiteral("0"));
         writer.writeEndElement(); //c:overlay
@@ -1045,6 +1089,10 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
         writer.writeStartElement(name);
         writer.writeEmptyElement(QStringLiteral("c:axId"));
         writer.writeAttribute(QStringLiteral("val"), QString::number(axis->axisId));
+
+        writer.writeStartElement(QStringLiteral("c:title"));
+        saveXmlTx(writer, axis->name);
+        writer.writeEndElement();//c:title
 
         writer.writeStartElement(QStringLiteral("c:scaling"));
         writer.writeEmptyElement(QStringLiteral("c:orientation"));

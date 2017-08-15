@@ -96,6 +96,9 @@ public:
     void enableAxisMajorGridLines(AxisType, bool);
     void enableAxisMinorGridLines(AxisType, bool);
 
+    QString getAxisName(AxisType type) const;
+    void setAxisName(AxisType type, const QString& name);
+
     void setShowLegend(bool, Pos);
 
     void saveToXmlFile(QIODevice *device) const;
