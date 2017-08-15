@@ -141,6 +141,7 @@ public:
     bool majorLines;
     bool minorLines;
     QString name{};
+    Chart::TickLabelPos tickLabelPos;
 };
 
 class ChartPrivate : public AbstractOOXmlFilePrivate
@@ -164,6 +165,7 @@ public:
     bool loadXmlLegend(QXmlStreamReader &reader);
 
     void saveXmlTx(QXmlStreamWriter &writer, const QString& text) const;
+    void saveXmlTickLabelPos(QXmlStreamWriter &writer, Chart::TickLabelPos tickLabelPos) const;
     void saveXmlChart(QXmlStreamWriter &writer) const;
     void saveXmlPieChart(QXmlStreamWriter &writer) const;
     void saveXmlBarChart(QXmlStreamWriter &writer) const;

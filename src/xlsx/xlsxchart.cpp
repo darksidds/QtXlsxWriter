@@ -441,6 +441,25 @@ Chart::setAxisName(AxisType type, const QString& name)
     d->axisList[index]->name = name;
 }
 
+Chart::TickLabelPos
+Chart::getTickLablePos(AxisType type) const
+{
+    Q_D(const Chart);
+    int index = d->AxisIndex(type);
+    return (index != -1) ? d->axisList[index]->tickLabelPos
+                         : Chart::TickLabelPos();
+}
+
+void
+Chart::setTickLabelPos(AxisType type, TickLabelPos pos)
+{
+    Q_D(Chart);
+    int index = d->AxisIndex(type);
+    if (index == -1)
+        return;
+    d->axisList[index]->tickLabelPos = pos;
+}
+
 void Chart::setShowLegend(bool show, Pos pos)
 {
     Q_D(Chart);
@@ -786,6 +805,16 @@ ChartPrivate::saveXmlTx(QXmlStreamWriter &writer, const QString& text) const
     writer.writeEndElement(); //a:p
     writer.writeEndElement(); //c:rich
     writer.writeEndElement(); //c:tx
+}
+
+void
+ChartPrivate::saveXmlTickLabelPos(QXmlStreamWriter& writer,
+                                  Chart::TickLabelPos tickLabelPos) const
+{
+    if (tickLabelPos.isDefault())
+        return;
+    writer.writeEmptyElement(QStringLiteral("c:tickLblPos"));
+    writer.writeAttribute(QStringLiteral("val"), tickLabelPos.toString());
 }
 
 void ChartPrivate::saveXmlChart(QXmlStreamWriter &writer) const
@@ -1140,6 +1169,8 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
         }
         writer.writeEmptyElement(QStringLiteral("c:crossAx"));
         writer.writeAttribute(QStringLiteral("val"), QString::number(axis->crossAx));
+
+        saveXmlTickLabelPos(writer, axis->tickLabelPos);
 
         writer.writeEndElement();//name
     }
