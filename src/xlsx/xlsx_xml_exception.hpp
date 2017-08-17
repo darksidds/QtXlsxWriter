@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
+** Copyright (c) 2017 Roman Bulygin <rbulygin@gmail.com>
 ** All right reserved.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining
@@ -22,37 +22,16 @@
 ** WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **
 ****************************************************************************/
-#ifndef XLSXCHARTSHEET_P_H
-#define XLSXCHARTSHEET_P_H
+#ifndef QXLSX_XML_EXCEPTION_HPP
+#define QXLSX_XML_EXCEPTION_HPP
 
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt Xlsx API.  It exists for the convenience
-// of the Qt Xlsx.  This header file may change from
-// version to version without notice, or even be removed.
-//
-// We mean it.
-//
+#include <QException>
 
-#include "xlsx_CT_HeaderFooter.hpp"
-#include "xlsxglobal.h"
-#include "xlsxchartsheet.h"
-#include "xlsxabstractsheet_p.h"
-
-namespace QXlsx {
-
-class XLSX_AUTOTEST_EXPORT ChartsheetPrivate : public AbstractSheetPrivate
+class XlsxParseException : public QException
 {
-    Q_DECLARE_PUBLIC(Chartsheet)
 public:
-    ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag);
-    ~ChartsheetPrivate();
-
-    Chart *chart;
-    CT_HeaderFooter headerFooter;
+    virtual void raise() const override;
+    virtual QException* clone() const override;
 };
 
-}
-#endif // XLSXCHARTSHEET_P_H
+#endif // QXLSX_XML_EXCEPTION_HPP

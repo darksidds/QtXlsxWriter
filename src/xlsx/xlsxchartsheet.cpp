@@ -130,6 +130,8 @@ void Chartsheet::saveToXmlFile(QIODevice *device) const
     writer.writeEmptyElement(QStringLiteral("drawing"));
     writer.writeAttribute(QStringLiteral("r:id"), QStringLiteral("rId%1").arg(d->relationships->count()));
 
+    write(writer, d->headerFooter);
+
     writer.writeEndElement();//chartsheet
     writer.writeEndDocument();
 }
@@ -142,6 +144,8 @@ bool Chartsheet::loadFromXmlFile(QIODevice *device)
     while (!reader.atEnd()) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
+            if(read(reader, &d->headerFooter))
+                continue;
             if (reader.name() == QLatin1String("drawing")) {
                 QString rId = reader.attributes().value(QStringLiteral("r:id")).toString();
                 QString name = d->relationships->getRelationshipById(rId).target;

@@ -36,6 +36,7 @@
 // We mean it.
 //
 
+#include "xlsx_CT_HeaderFooter.hpp"
 #include "xlsxworksheet.h"
 #include "xlsxabstractsheet_p.h"
 #include "xlsxcell.h"
@@ -279,36 +280,6 @@ struct XlsxPageSetup
     QString rID;
 };
 
-struct XlsxHeaderFooter
-{
-    bool alignWithMargins{true};
-    bool differentFirst{false};
-    bool differentOddEven{false};
-    bool scaleWithDoc{true};
-    // Headers and footers has its own complex format, but it is not parsed
-    // forawhile translate from souce to destination as-is
-    QString firstHeader;
-    QString firstFooter;
-    QString oddFooter;
-    QString oddHeader;
-    QString evenFooter;
-    QString evenHeader;
-
-    bool isEqual(const XlsxHeaderFooter& other) const
-    {
-        return (alignWithMargins == other.alignWithMargins)
-                && (differentFirst == other.differentFirst)
-                && (differentOddEven == other.differentOddEven)
-                && (scaleWithDoc == other.scaleWithDoc)
-                && (firstHeader == other.firstHeader)
-                && (firstFooter == other.firstFooter)
-                && (oddHeader == other.oddHeader)
-                && (oddFooter == other.oddFooter)
-                && (evenHeader == other.evenHeader)
-                && (evenFooter == other.evenFooter);
-    }
-};
-
 class XLSX_AUTOTEST_EXPORT WorksheetPrivate : public AbstractSheetPrivate
 {
     Q_DECLARE_PUBLIC(Worksheet)
@@ -406,7 +377,7 @@ public:
     XlsxPrintOptions printOptions;
     XlsxPageMargins pageMargins;
     XlsxPageSetup pageSetup;
-    XlsxHeaderFooter headerFooter;
+    CT_HeaderFooter headerFooter;
     QRegularExpression urlPattern;
 private:
     static double calculateColWidth(int characters);

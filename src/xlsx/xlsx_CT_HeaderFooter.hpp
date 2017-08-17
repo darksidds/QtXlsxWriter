@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
+** Copyright (c) 2017 Roman Bulygin <rbulygin@gmail.com>
 ** All right reserved.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining
@@ -22,37 +22,44 @@
 ** WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **
 ****************************************************************************/
-#ifndef XLSXCHARTSHEET_P_H
-#define XLSXCHARTSHEET_P_H
+#ifndef QXLSX_CT_HEADER_FOOTER_HPP
+#define QXLSX_CT_HEADER_FOOTER_HPP
 
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt Xlsx API.  It exists for the convenience
-// of the Qt Xlsx.  This header file may change from
-// version to version without notice, or even be removed.
-//
-// We mean it.
-//
-
-#include "xlsx_CT_HeaderFooter.hpp"
 #include "xlsxglobal.h"
-#include "xlsxchartsheet.h"
-#include "xlsxabstractsheet_p.h"
 
-namespace QXlsx {
+#include <QString>
 
-class XLSX_AUTOTEST_EXPORT ChartsheetPrivate : public AbstractSheetPrivate
+class QXmlStreamReader;
+class QXmlStreamWriter;
+
+QT_BEGIN_NAMESPACE_XLSX
+
+struct CT_HeaderFooter
 {
-    Q_DECLARE_PUBLIC(Chartsheet)
-public:
-    ChartsheetPrivate(Chartsheet *p, Chartsheet::CreateFlag flag);
-    ~ChartsheetPrivate();
+    // Headers and footers has its own complex format, but it is not parsed
+    // forawhile and translate from source to destination as-is
+    QString oddHeader;
+    QString oddFooter;
+    QString evenHeader;
+    QString evenFooter;
+    QString firstHeader;
+    QString firstFooter;
 
-    Chart *chart;
-    CT_HeaderFooter headerFooter;
+    bool differentOddEven{false};
+    bool differentFirst{false};
+    bool scaleWithDoc{true};
+    bool alignWithMargins{true};
+
+    bool isEqual(const CT_HeaderFooter& other) const;
 };
 
-}
-#endif // XLSXCHARTSHEET_P_H
+// Returns true when reading is OK and data was filled
+// Returns false when current element is not HeaderFooter (nothing is readed)
+// throw exception on error in stream
+bool read(QXmlStreamReader& reader, CT_HeaderFooter* pHeaderFooter);
+
+void write(QXmlStreamWriter& writer, const CT_HeaderFooter& headerFooter);
+
+QT_END_NAMESPACE_XLSX
+
+#endif // QXLSX_CT_HEADER_FOOTER_HPP
