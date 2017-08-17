@@ -29,6 +29,8 @@
 #include <QStringList>
 #include <QSharedPointer>
 
+#include "xlsx_CT_PageSetup.hpp"
+
 QT_BEGIN_NAMESPACE_XLSX
 class Workbook;
 class DocumentPrivate;
@@ -42,11 +44,16 @@ public:
     ~Chartsheet();
     Chart *chart();
 
+    // Page setup options
+    CT_CsPageSetup& pageSetup();
+    const CT_CsPageSetup& pageSetup() const;
+
 private:
     friend class DocumentPrivate;
     friend class Workbook;
     Chartsheet(const QString &sheetName, int sheetId, Workbook *book, CreateFlag flag);
     Chartsheet *copy(const QString &distName, int distId) const;
+
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);

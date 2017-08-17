@@ -106,6 +106,26 @@ Chart *Chartsheet::chart()
     return d->chart;
 }
 
+/*!
+ * Returns the page setup object of the sheet.
+ */
+CT_CsPageSetup&
+Chartsheet::pageSetup()
+{
+    Q_D(Chartsheet);
+    return d->pageSetup;
+}
+
+/*!
+ * Returns the page setup object of the sheet.
+ */
+const CT_CsPageSetup&
+Chartsheet::pageSetup() const
+{
+    Q_D(const Chartsheet);
+    return d->pageSetup;
+}
+
 void Chartsheet::saveToXmlFile(QIODevice *device) const
 {
     Q_D(const Chartsheet);
@@ -117,12 +137,15 @@ void Chartsheet::saveToXmlFile(QIODevice *device) const
     writer.writeDefaultNamespace(QStringLiteral("http://schemas.openxmlformats.org/spreadsheetml/2006/main"));
     writer.writeNamespace(QStringLiteral("http://schemas.openxmlformats.org/officeDocument/2006/relationships"), QStringLiteral("r"));
     writer.writeStartElement(QStringLiteral("chartsheet"));
-
+    writer.writeEmptyElement(QStringLiteral("sheetPr"));
     writer.writeStartElement(QStringLiteral("sheetViews"));
     writer.writeEmptyElement(QStringLiteral("sheetView"));
     writer.writeAttribute(QStringLiteral("workbookViewId"), QString::number(0));
     writer.writeAttribute(QStringLiteral("zoomToFit"), QStringLiteral("1"));
     writer.writeEndElement(); //sheetViews
+
+    //write(writer, d->headerFooter);
+    //write(writer, d->pageSetup);
 
     int idx = d->workbook->drawings().indexOf(d->drawing.data());
     d->relationships->addWorksheetRelationship(QStringLiteral("/drawing"), QStringLiteral("../drawings/drawing%1.xml").arg(idx+1));
@@ -130,7 +153,6 @@ void Chartsheet::saveToXmlFile(QIODevice *device) const
     writer.writeEmptyElement(QStringLiteral("drawing"));
     writer.writeAttribute(QStringLiteral("r:id"), QStringLiteral("rId%1").arg(d->relationships->count()));
 
-    write(writer, d->headerFooter);
 
     writer.writeEndElement();//chartsheet
     writer.writeEndDocument();
@@ -145,6 +167,8 @@ bool Chartsheet::loadFromXmlFile(QIODevice *device)
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if(read(reader, &d->headerFooter))
+                continue;
+            if(read(reader, &d->pageSetup))
                 continue;
             if (reader.name() == QLatin1String("drawing")) {
                 QString rId = reader.attributes().value(QStringLiteral("r:id")).toString();

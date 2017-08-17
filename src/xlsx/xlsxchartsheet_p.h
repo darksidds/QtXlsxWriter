@@ -37,6 +37,7 @@
 //
 
 #include "xlsx_CT_HeaderFooter.hpp"
+#include "xlsx_CT_PageSetup.hpp"
 #include "xlsxglobal.h"
 #include "xlsxchartsheet.h"
 #include "xlsxabstractsheet_p.h"
@@ -52,6 +53,7 @@ public:
 
     Chart *chart;
     CT_HeaderFooter headerFooter;
+    CT_CsPageSetup pageSetup;
 };
 
 }

@@ -105,6 +105,8 @@ INSTALL(FILES  ${CMAKE_CURRENT_BINARY_DIR}/QtXlsxWriterConfig.cmake DESTINATION
     lib${LIB_SUFFIX}/cmake/${PROJECT_NAME})
 
 SET(INCLUDE_FILES
+  src/xlsx/xlsx_CT_HeaderFooter.hpp
+  src/xlsx/xlsx_CT_PageSetup.hpp
   src/xlsx/xlsx_xml_exception.hpp
   src/xlsx/xlsxabstractooxmlfile.h
   src/xlsx/xlsxabstractsheet.h
