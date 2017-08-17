@@ -102,6 +102,12 @@ void InsertAxisXY(QList<QSharedPointer<XlsxAxis> > &axis)
     axis.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0)));
 }
 
+void InsertAxisXYval(QList<QSharedPointer<XlsxAxis> > &axis)
+{
+    axis.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Bottom, 0, 1)));
+    axis.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Val, XlsxAxis::Left, 1, 0)));
+}
+
 void InsertAxisZ(QList<QSharedPointer<XlsxAxis> > &axis)
 {
     axis.append(QSharedPointer<XlsxAxis>(new XlsxAxis(XlsxAxis::T_Ser, XlsxAxis::Bottom, 2, 0)));
@@ -262,8 +268,10 @@ void Chart::setChartType(ChartType type)
             InsertAxisZ(d->axisList);
             break;
         case Chart::CT_Scatter :
-        case Chart::CT_ScatterLine :
             InsertAxisXY(d->axisList);
+            break;
+        case Chart::CT_ScatterLine :
+            InsertAxisXYval(d->axisList);
             break;
         case Chart::CT_Area :
         case Chart::CT_Area3D :
