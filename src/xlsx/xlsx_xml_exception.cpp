@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
+** Copyright (c) 2017 Roman Bulygin <rbulygin@gmail.com>
 ** All right reserved.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining
@@ -22,42 +22,16 @@
 ** WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **
 ****************************************************************************/
-#ifndef XLSXCHARTSHEET_H
-#define XLSXCHARTSHEET_H
+#include "xlsx_xml_exception.hpp"
 
-#include "xlsxabstractsheet.h"
-#include <QStringList>
-#include <QSharedPointer>
-
-#include "xlsx_CT_PageSetup.hpp"
-
-QT_BEGIN_NAMESPACE_XLSX
-class Workbook;
-class DocumentPrivate;
-class ChartsheetPrivate;
-class Chart;
-class Q_XLSX_EXPORT Chartsheet : public AbstractSheet
+void
+XlsxParseException::raise() const
 {
-    Q_DECLARE_PRIVATE(Chartsheet)
-public:
+    throw * this;
+}
 
-    ~Chartsheet();
-    Chart *chart();
-
-    // Page setup options
-    CT_CsPageSetup& pageSetup();
-    const CT_CsPageSetup& pageSetup() const;
-
-private:
-    friend class DocumentPrivate;
-    friend class Workbook;
-    Chartsheet(const QString &sheetName, int sheetId, Workbook *book, CreateFlag flag);
-    Chartsheet *copy(const QString &distName, int distId) const;
-
-
-    void saveToXmlFile(QIODevice *device) const;
-    bool loadFromXmlFile(QIODevice *device);
-};
-
-QT_END_NAMESPACE_XLSX
-#endif // XLSXCHARTSHEET_H
+QException*
+XlsxParseException::clone() const
+{
+    return new XlsxParseException(*this);
+}

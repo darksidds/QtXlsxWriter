@@ -1,5 +1,5 @@
 /****************************************************************************
-** Copyright (c) 2013-2014 Debao Zhang <hello@debao.me>
+** Copyright (c) 2017 Roman Bulygin <rbulygin@gmail.com>
 ** All right reserved.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining
@@ -22,42 +22,44 @@
 ** WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **
 ****************************************************************************/
-#ifndef XLSXCHARTSHEET_H
-#define XLSXCHARTSHEET_H
+#ifndef QXLSX_CT_HEADER_FOOTER_HPP
+#define QXLSX_CT_HEADER_FOOTER_HPP
 
-#include "xlsxabstractsheet.h"
-#include <QStringList>
-#include <QSharedPointer>
+#include "xlsxglobal.h"
 
-#include "xlsx_CT_PageSetup.hpp"
+#include <QString>
+
+class QXmlStreamReader;
+class QXmlStreamWriter;
 
 QT_BEGIN_NAMESPACE_XLSX
-class Workbook;
-class DocumentPrivate;
-class ChartsheetPrivate;
-class Chart;
-class Q_XLSX_EXPORT Chartsheet : public AbstractSheet
+
+struct CT_HeaderFooter
 {
-    Q_DECLARE_PRIVATE(Chartsheet)
-public:
+    // Headers and footers has its own complex format, but it is not parsed
+    // forawhile and translate from source to destination as-is
+    QString oddHeader;
+    QString oddFooter;
+    QString evenHeader;
+    QString evenFooter;
+    QString firstHeader;
+    QString firstFooter;
 
-    ~Chartsheet();
-    Chart *chart();
+    bool differentOddEven{false};
+    bool differentFirst{false};
+    bool scaleWithDoc{true};
+    bool alignWithMargins{true};
 
-    // Page setup options
-    CT_CsPageSetup& pageSetup();
-    const CT_CsPageSetup& pageSetup() const;
-
-private:
-    friend class DocumentPrivate;
-    friend class Workbook;
-    Chartsheet(const QString &sheetName, int sheetId, Workbook *book, CreateFlag flag);
-    Chartsheet *copy(const QString &distName, int distId) const;
-
-
-    void saveToXmlFile(QIODevice *device) const;
-    bool loadFromXmlFile(QIODevice *device);
+    bool isEqual(const CT_HeaderFooter& other) const;
 };
 
+// Returns true when reading is OK and data was filled
+// Returns false when current element is not HeaderFooter (nothing is readed)
+// throw exception on error in stream
+bool read(QXmlStreamReader& reader, CT_HeaderFooter* pHeaderFooter);
+
+void write(QXmlStreamWriter& writer, const CT_HeaderFooter& headerFooter);
+
 QT_END_NAMESPACE_XLSX
-#endif // XLSXCHARTSHEET_H
+
+#endif // QXLSX_CT_HEADER_FOOTER_HPP

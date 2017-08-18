@@ -22,6 +22,7 @@
 ** WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **
 ****************************************************************************/
+#include "xlsx_CT_HeaderFooter.hpp"
 #include "xlsxrichstring.h"
 #include "xlsxcellreference.h"
 #include "xlsxworksheet.h"
@@ -1437,6 +1438,7 @@ void Worksheet::saveToXmlFile(QIODevice *device) const
     d->saveXmlPrintOptions(writer);
     d->saveXmlPageMargins(writer);
     d->saveXmlPageSetup(writer);
+    QXlsx::write(writer, d->headerFooter);
 
     writer.writeEndElement();//worksheet
     writer.writeEndDocument();
@@ -1679,7 +1681,7 @@ void WorksheetPrivate::saveXmlPrintOptions(QXmlStreamWriter &writer) const
 void WorksheetPrivate::saveXmlPageMargins(QXmlStreamWriter &writer) const
 {
     writer.writeStartElement(QStringLiteral("pageMargins"));
-    
+
     writer.writeAttribute(QStringLiteral("left"),   QString::number(pageMargins.left, 'g', 15));
     writer.writeAttribute(QStringLiteral("right"),  QString::number(pageMargins.right, 'g', 15));
     writer.writeAttribute(QStringLiteral("top"),    QString::number(pageMargins.top, 'g', 15));
@@ -1693,9 +1695,9 @@ void WorksheetPrivate::saveXmlPageMargins(QXmlStreamWriter &writer) const
 void WorksheetPrivate::saveXmlPageSetup(QXmlStreamWriter &writer) const
 {
     XlsxPageSetup defaultValues;
-    
+
     writer.writeStartElement(QStringLiteral("pageSetup"));
-    
+
     if (pageSetup.paperSize          != defaultValues.paperSize)          writer.writeAttribute(QStringLiteral("paperSize"),          QString::number(pageSetup.paperSize));
     if (pageSetup.scale              != defaultValues.scale)              writer.writeAttribute(QStringLiteral("scale"),              QString::number(pageSetup.scale));
     if (pageSetup.firstPageNumber    != defaultValues.firstPageNumber)    writer.writeAttribute(QStringLiteral("firstPageNumber"),    QString::number(pageSetup.firstPageNumber));
@@ -2335,6 +2337,7 @@ int WorksheetPrivate::colPixelsSize(int col) const
 
 void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader)
 {
+    XlsxRowInfo defaultRowInfo;
     Q_Q(Worksheet);
     Q_ASSERT(reader.name() == QLatin1String("sheetData"));
 
@@ -2356,7 +2359,7 @@ void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader)
                     }
 
                     if (attributes.hasAttribute(QLatin1String("customHeight"))) {
-                        info->customHeight = attributes.value(QLatin1String("customHeight")) == QLatin1String("1");
+                        info->customHeight = parseXsdBoolean(attributes.value(QLatin1String("customHeight")).toString(), defaultRowInfo.customHeight);
                         //Row height is only specified when customHeight is set
                         if(attributes.hasAttribute(QLatin1String("ht"))) {
                             info->height = attributes.value(QLatin1String("ht")).toString().toDouble();
@@ -2364,8 +2367,8 @@ void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader)
                     }
 
                     //both "hidden" and "collapsed" default are false
-                    info->hidden = attributes.value(QLatin1String("hidden")) == QLatin1String("1");
-                    info->collapsed = attributes.value(QLatin1String("collapsed")) == QLatin1String("1");
+                    info->hidden =    parseXsdBoolean(attributes.value(QLatin1String("hidden")).toString(), defaultRowInfo.hidden);
+                    info->collapsed = parseXsdBoolean(attributes.value(QLatin1String("collapsed")).toString(), defaultRowInfo.collapsed);
 
                     if (attributes.hasAttribute(QLatin1String("outlineLevel")))
                         info->outlineLevel = attributes.value(QLatin1String("outlineLevel")).toString().toInt();
@@ -2460,6 +2463,8 @@ void WorksheetPrivate::loadXmlSheetData(QXmlStreamReader &reader)
 
 void WorksheetPrivate::loadXmlColumnsInfo(QXmlStreamReader &reader)
 {
+    XlsxColumnInfo defaultColumnInfo;
+
     Q_ASSERT(reader.name() == QLatin1String("cols"));
 
     while (!reader.atEnd() && !(reader.name() == QLatin1String("cols") && reader.tokenType() == QXmlStreamReader::EndElement)) {
@@ -2477,7 +2482,7 @@ void WorksheetPrivate::loadXmlColumnsInfo(QXmlStreamReader &reader)
                 //Flag indicating that the column width for the affected column(s) is different from the
                 // default or has been manually set
                 if(colAttrs.hasAttribute(QLatin1String("customWidth"))) {
-                    info->customWidth = colAttrs.value(QLatin1String("customWidth")) == QLatin1String("1");
+                    info->customWidth = parseXsdBoolean(colAttrs.value(QLatin1String("customWidth")).toString(), defaultColumnInfo.customWidth);
                 }
                 //Note, node may have "width" without "customWidth"
                 if (colAttrs.hasAttribute(QLatin1String("width"))) {
@@ -2485,8 +2490,8 @@ void WorksheetPrivate::loadXmlColumnsInfo(QXmlStreamReader &reader)
                     info->width = width;
                 }
 
-                info->hidden = colAttrs.value(QLatin1String("hidden")) == QLatin1String("1");
-                info->collapsed = colAttrs.value(QLatin1String("collapsed")) == QLatin1String("1");
+                info->hidden = parseXsdBoolean(colAttrs.value(QLatin1String("hidden")).toString(), defaultColumnInfo.hidden);
+                info->collapsed =  parseXsdBoolean(colAttrs.value(QLatin1String("collapsed")).toString(), defaultColumnInfo.collapsed);
 
                 if (colAttrs.hasAttribute(QLatin1String("style"))) {
                     int idx = colAttrs.value(QLatin1String("style")).toString().toInt();
@@ -2555,72 +2560,72 @@ void WorksheetPrivate::loadXmlSheetViews(QXmlStreamReader &reader)
             && reader.tokenType() == QXmlStreamReader::EndElement)) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
-			if (reader.name() == QLatin1String("sheetView")) {
-				QXmlStreamAttributes attrs = reader.attributes();
-				//default false
-				windowProtection = attrs.value(QLatin1String("windowProtection")) == QLatin1String("1");
-				showFormulas = attrs.value(QLatin1String("showFormulas")) == QLatin1String("1");
-				rightToLeft = attrs.value(QLatin1String("rightToLeft")) == QLatin1String("1");
-				tabSelected = attrs.value(QLatin1String("tabSelected")) == QLatin1String("1");
-				//default true
-				showGridLines = attrs.value(QLatin1String("showGridLines")) != QLatin1String("0");
-				showRowColHeaders = attrs.value(QLatin1String("showRowColHeaders")) != QLatin1String("0");
-				showZeros = attrs.value(QLatin1String("showZeros")) != QLatin1String("0");
-				showRuler = attrs.value(QLatin1String("showRuler")) != QLatin1String("0");
-				showOutlineSymbols = attrs.value(QLatin1String("showOutlineSymbols")) != QLatin1String("0");
-				showWhiteSpace = attrs.value(QLatin1String("showWhiteSpace")) != QLatin1String("0");
-			} else if (reader.name() == QLatin1String("pane")) {
-				QXmlStreamAttributes attrs = reader.attributes();
-				pane = new XlsxPane;
-				// default 0
-				pane->xSplit = 0;
-				pane->ySplit = 0;
-				if (attrs.hasAttribute(QLatin1String("xSplit"))) {
-					pane->xSplit = attrs.value(QLatin1String("xSplit")).toString().toInt();
-				}
-				if (attrs.hasAttribute(QLatin1String("ySplit"))) {
-					pane->ySplit = attrs.value(QLatin1String("ySplit")).toString().toInt();
-				}
-				pane->topLeftCell = CellReference(attrs.value(QLatin1String("topLeftCell")).toString());
-				// default bottomLeft
-				QString activePane = attrs.value(QLatin1String("activePane")).toString();
-				if (activePane == QStringLiteral("bottomRight")) {
-					pane->activePane = XLSX_PANE_BOTTOM_RIGHT;
-				} else if (activePane == QStringLiteral("topLeft")) {
-					pane->activePane = XLSX_PANE_TOP_LEFT;
-				} else if (activePane == QStringLiteral("topRight")) {
-					pane->activePane = XLSX_PANE_TOP_RIGHT;
-				} else {
-					pane->activePane = XLSX_PANE_BOTTOM_LEFT;
-				}
-				// default split
-				QString state = attrs.value(QLatin1String("state")).toString();
-				if (state == QStringLiteral("frozen")) {
-					pane->state = XLSX_PANE_FROZEN;
-				} else if (state == QStringLiteral("frozenSplit")) {
-					pane->state = XLSX_PANE_FROZEN_SPLIT;
-				} else {
-					pane->state = XLSX_PANE_SPLIT;
-				}
-			} else if (reader.name() == QLatin1String("selection")) {
-				QXmlStreamAttributes attrs = reader.attributes();
-				XlsxSelection selection;
-				// default bottomLeft
-				QString pane = attrs.value(QLatin1String("pane")).toString();
-				if (pane == QStringLiteral("bottomRight")) {
-					selection.pane = XLSX_PANE_BOTTOM_RIGHT;
-				} else if (pane == QStringLiteral("topLeft")) {
-					selection.pane = XLSX_PANE_TOP_LEFT;
-				} else if (pane == QStringLiteral("topRight")) {
-					selection.pane = XLSX_PANE_TOP_RIGHT;
-				} else {
-					selection.pane = XLSX_PANE_BOTTOM_LEFT;
-				}
-				selection.activeCell = CellReference(attrs.value(QLatin1String("activeCell")).toString());
-				selection.sqref = CellRange(attrs.value(QLatin1String("sqref")).toString());
-				selections.append(selection);
-			}
-		}
+            if (reader.name() == QLatin1String("sheetView")) {
+                QXmlStreamAttributes attrs = reader.attributes();
+                //default false
+                windowProtection = parseXsdBoolean(attrs.value(QLatin1String("windowProtection")).toString(), false);
+                showFormulas =     parseXsdBoolean(attrs.value(QLatin1String("showFormulas")).toString(), false);
+                rightToLeft =      parseXsdBoolean(attrs.value(QLatin1String("rightToLeft")).toString(), false);
+                tabSelected =      parseXsdBoolean(attrs.value(QLatin1String("tabSelected")).toString(), false);
+                //default true
+                showGridLines =      parseXsdBoolean(attrs.value(QLatin1String("showGridLines")).toString(), true);
+                showRowColHeaders =  parseXsdBoolean(attrs.value(QLatin1String("showRowColHeaders")).toString(), true);
+                showZeros =          parseXsdBoolean(attrs.value(QLatin1String("showZeros")).toString(), true);
+                showRuler =          parseXsdBoolean(attrs.value(QLatin1String("showRuler")).toString(), true);
+                showOutlineSymbols = parseXsdBoolean(attrs.value(QLatin1String("showOutlineSymbols")).toString(), true);
+                showWhiteSpace =     parseXsdBoolean(attrs.value(QLatin1String("showWhiteSpace")).toString(), true);
+            } else if (reader.name() == QLatin1String("pane")) {
+                QXmlStreamAttributes attrs = reader.attributes();
+                pane = new XlsxPane;
+                // default 0
+                pane->xSplit = 0;
+                pane->ySplit = 0;
+                if (attrs.hasAttribute(QLatin1String("xSplit"))) {
+                    pane->xSplit = attrs.value(QLatin1String("xSplit")).toString().toInt();
+                }
+                if (attrs.hasAttribute(QLatin1String("ySplit"))) {
+                    pane->ySplit = attrs.value(QLatin1String("ySplit")).toString().toInt();
+                }
+                pane->topLeftCell = CellReference(attrs.value(QLatin1String("topLeftCell")).toString());
+                // default bottomLeft
+                QString activePane = attrs.value(QLatin1String("activePane")).toString();
+                if (activePane == QStringLiteral("bottomRight")) {
+                    pane->activePane = XLSX_PANE_BOTTOM_RIGHT;
+                } else if (activePane == QStringLiteral("topLeft")) {
+                    pane->activePane = XLSX_PANE_TOP_LEFT;
+                } else if (activePane == QStringLiteral("topRight")) {
+                    pane->activePane = XLSX_PANE_TOP_RIGHT;
+                } else {
+                    pane->activePane = XLSX_PANE_BOTTOM_LEFT;
+                }
+                // default split
+                QString state = attrs.value(QLatin1String("state")).toString();
+                if (state == QStringLiteral("frozen")) {
+                    pane->state = XLSX_PANE_FROZEN;
+                } else if (state == QStringLiteral("frozenSplit")) {
+                    pane->state = XLSX_PANE_FROZEN_SPLIT;
+                } else {
+                    pane->state = XLSX_PANE_SPLIT;
+                }
+            } else if (reader.name() == QLatin1String("selection")) {
+                QXmlStreamAttributes attrs = reader.attributes();
+                XlsxSelection selection;
+                // default bottomLeft
+                QString pane = attrs.value(QLatin1String("pane")).toString();
+                if (pane == QStringLiteral("bottomRight")) {
+                    selection.pane = XLSX_PANE_BOTTOM_RIGHT;
+                } else if (pane == QStringLiteral("topLeft")) {
+                    selection.pane = XLSX_PANE_TOP_LEFT;
+                } else if (pane == QStringLiteral("topRight")) {
+                    selection.pane = XLSX_PANE_TOP_RIGHT;
+                } else {
+                    selection.pane = XLSX_PANE_BOTTOM_LEFT;
+                }
+                selection.activeCell = CellReference(attrs.value(QLatin1String("activeCell")).toString());
+                selection.sqref = CellRange(attrs.value(QLatin1String("sqref")).toString());
+                selections.append(selection);
+            }
+        }
     }
 }
 
@@ -2635,7 +2640,7 @@ void WorksheetPrivate::loadXmlSheetFormatProps(QXmlStreamReader &reader)
         if(attrib.name() == QLatin1String("baseColWidth") ) {
             formatProps.baseColWidth = attrib.value().toString().toInt();
         } else if(attrib.name() == QLatin1String("customHeight")) {
-            formatProps.customHeight = attrib.value() == QLatin1String("1");
+            formatProps.customHeight = parseXsdBoolean(attrib.value().toString(), formatProps.customHeight);
         } else if(attrib.name() == QLatin1String("defaultColWidth")) {
             formatProps.defaultColWidth = attrib.value().toString().toDouble();
         } else if(attrib.name() == QLatin1String("defaultRowHeight")) {
@@ -2645,11 +2650,11 @@ void WorksheetPrivate::loadXmlSheetFormatProps(QXmlStreamReader &reader)
         } else if(attrib.name() == QLatin1String("outlineLevelRow")) {
             formatProps.outlineLevelRow = attrib.value().toString().toInt();
         } else if(attrib.name() == QLatin1String("thickBottom")) {
-            formatProps.thickBottom = attrib.value() == QLatin1String("1");
+            formatProps.thickBottom = parseXsdBoolean(attrib.value().toString(), formatProps.thickBottom);
         } else if(attrib.name() == QLatin1String("thickTop")) {
-            formatProps.thickTop  = attrib.value() == QLatin1String("1");
+            formatProps.thickTop  = parseXsdBoolean(attrib.value().toString(), formatProps.thickTop);
         } else if(attrib.name() == QLatin1String("zeroHeight")) {
-            formatProps.zeroHeight = attrib.value() == QLatin1String("1");
+            formatProps.zeroHeight = parseXsdBoolean(attrib.value().toString(), formatProps.zeroHeight);
         }
     }
 
@@ -2700,7 +2705,7 @@ void WorksheetPrivate::loadXmlPrintOptions(QXmlStreamReader &reader)
 {
     Q_ASSERT(reader.name() == QLatin1String("printOptions"));
     QXmlStreamAttributes attributes = reader.attributes();
-    
+
     foreach (QXmlStreamAttribute attrib, attributes) {
         if(attrib.name() == QLatin1String("horizontalCentered") ) {
             printOptions.horizontalCentered = parseXsdBoolean(attrib.value().toString(), printOptions.horizontalCentered);
@@ -2720,7 +2725,7 @@ void WorksheetPrivate::loadXmlPageMargins(QXmlStreamReader &reader)
 {
     Q_ASSERT(reader.name() == QLatin1String("pageMargins"));
     QXmlStreamAttributes attributes = reader.attributes();
-    
+
     foreach (QXmlStreamAttribute attrib, attributes) {
         if(attrib.name() == QLatin1String("left") ) {
             pageMargins.left = attrib.value().toString().toDouble();
@@ -2900,6 +2905,8 @@ bool Worksheet::loadFromXmlFile(QIODevice *device)
                 d->loadXmlPageMargins(reader);
             } else if (reader.name() == QLatin1String("pageSetup")) {
                 d->loadXmlPageSetup(reader);
+            } else if (reader.name() == QLatin1String("headerFooter")) {
+                QXlsx::read(reader, &d->headerFooter);
             }
         }
     }

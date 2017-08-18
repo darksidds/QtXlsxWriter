@@ -80,6 +80,36 @@ public:
         Bottom
     };
 
+    struct TickLabelPos
+    {
+        enum CT_TickLabelPos { high, low, nextTo, none };
+
+        TickLabelPos() = default;
+        explicit TickLabelPos(CT_TickLabelPos val)
+            : val(val)
+        {
+        }
+
+        CT_TickLabelPos val{nextTo};
+
+        bool isDefault() const { return val == nextTo; }
+
+        QString toString() const
+        {
+            switch (val)
+            {
+            case high:
+                return QLatin1Literal("high");
+            case low:
+                return QLatin1Literal("low");
+            case nextTo:
+                return QLatin1Literal("nextTo");
+            default:
+                return QLatin1Literal("none");
+            }
+        }
+    };
+
     ~Chart();
 
     void addSeries(const CellRange &range, AbstractSheet *sheet = 0, ChartLine line = ChartLine());
@@ -95,6 +125,12 @@ public:
     void setAxisMinAuto(AxisType);
     void enableAxisMajorGridLines(AxisType, bool);
     void enableAxisMinorGridLines(AxisType, bool);
+
+    QString getAxisName(AxisType type) const;
+    void setAxisName(AxisType type, const QString& name);
+
+    TickLabelPos getTickLablePos(AxisType type) const;
+    void setTickLabelPos(AxisType type, TickLabelPos pos);
 
     void setShowLegend(bool, Pos);
 
@@ -113,4 +149,3 @@ private:
 QT_END_NAMESPACE_XLSX
 
 #endif // QXLSX_CHART_H
-

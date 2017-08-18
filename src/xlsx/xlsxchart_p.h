@@ -140,6 +140,8 @@ public:
     AxisScope maxValue;
     bool majorLines;
     bool minorLines;
+    QString name{};
+    Chart::TickLabelPos tickLabelPos;
 };
 
 class ChartPrivate : public AbstractOOXmlFilePrivate
@@ -149,6 +151,8 @@ class ChartPrivate : public AbstractOOXmlFilePrivate
 public:
     ChartPrivate(Chart *q, Chart::CreateFlag flag);
     ~ChartPrivate();
+
+    int AxisIndex(Chart::AxisType type) const;
 
     bool loadXmlChart(QXmlStreamReader &reader);
     bool loadXmlPlotArea(QXmlStreamReader &reader);
@@ -160,6 +164,8 @@ public:
     bool loadXmlLayout(QXmlStreamReader &reader);
     bool loadXmlLegend(QXmlStreamReader &reader);
 
+    void saveXmlTx(QXmlStreamWriter &writer, const QString& text) const;
+    void saveXmlTickLabelPos(QXmlStreamWriter &writer, Chart::TickLabelPos tickLabelPos) const;
     void saveXmlChart(QXmlStreamWriter &writer) const;
     void saveXmlPieChart(QXmlStreamWriter &writer) const;
     void saveXmlBarChart(QXmlStreamWriter &writer) const;
